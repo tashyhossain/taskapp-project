@@ -1,0 +1,122 @@
+<section id="nav-container" class="nav">
+  <header>
+    <div id="app-title" class="app-title">
+      <h1 class="fw-bold">task.it</h1>
+    </div>
+    <div class="nav-toggle">
+      <button id="toggle-btn" class="toggle-btn">
+        <i class="bi bi-arrow-left-short"></i>
+      </button>
+    </div>
+  </header>
+  <nav id="views-nav">
+    <button id="inbox-btn" class="btn btn-custom" data-view="inbox" data-title="Inbox">
+      <span class="btn-icon"><i class="bi bi-inbox"></i></span>
+      <span class="btn-name">Inbox</span>
+    </button>
+    <button id="today-btn" class="btn btn-custom" data-view="today" data-title="Today's Tasks">
+      <span class="btn-icon"><i class="bi bi-layers"></i></span>
+      <span class="btn-name">Today</span>
+    </button>
+    <button id="upcoming-btn" class="btn btn-custom" data-view="upcoming" data-title="Upcoming Tasks">
+      <span class="btn-icon"><i class="bi bi-calendar-week"></i></span>
+      <span class="btn-name">Upcoming</span>
+    </button>
+    <button id="projects-btn" class="btn btn-custom" type="button" data-bs-toggle="collapse" data-bs-target="#projects-nav" aria-expanded="false" aria-controls="projects-nav">
+      <span class="btn-icon"><i class="bi bi-folder2"></i></span>
+      <span class="btn-dropdown">
+        <span class="btn-name">Projects</span>
+        <span class="btn-signal"><i class="bi bi-chevron-down"></i></span>
+      </span>
+    </button>
+  </nav>
+  <nav id="projects-nav" class="collapse">
+    <ul class="projects-list">
+      <li id="last-project-item">
+        <button class="btn btn-project" id="add-project" data-bs-toggle="modal" data-bs-target="#project-form-popup">
+          <i class="bi bi-plus-square"></i>
+        </button>
+      </li>
+    </ul>
+  </nav>
+</section>
+<section id="main-container" class="main">
+  <header>
+    <div id="page-info">
+      <h2 class="h6" id="page-title"></h2>
+      <div id="todays-date"></div>
+    </div>
+    <div id="account-info">
+      <div id="search"></div>
+      <div id="account"></div>
+    </div>
+  </header>
+  <main class="container"></main>
+</section>
+<aside id="project-form-popup" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered modal-dialog-scrollable">
+    <form autocomplete="off" id="project-form" class="modal-content">
+      <div class="modal-header">
+        <h3 class="h6">Add Project</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-field">
+          <label for="project-input" class="form-label">Name</label>
+          <input id="project-input" type="text" maxlength="20" required>
+        </div>
+        <div class="form-field">
+          <label for="color-input" class="form-label">Color</label>
+          <input id="color-input" type="hidden" value="DEF">
+          <ul id="project-colors" class="dropdown">
+            <li id="current-color" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="btn-color" data-color="DEF"></span>
+              <span class="btn-name">Default (Grey)</span>
+            </li>
+            <ul id="color-options" class="dropdown-menu" aria-labelledby="#current-color">
+              <li>
+                <span class="btn-color" data-color="DEF"></span>
+                <span class="btn-name">Default (Grey)</span>
+              </li>
+              <li>
+                <span class="btn-color" data-color="PRP"></span>
+                <span class="btn-name">Purple</span>
+              </li>
+              <li>
+                <span class="btn-color" data-color="BLU"></span>
+                <span class="btn-name">Blue</span>
+              </li>
+              <li>
+                <span class="btn-color" data-color="TEA"></span>
+                <span class="btn-name">Teal</span>
+              </li>
+              <li>
+                <span class="btn-color" data-color="GRN"></span>
+                <span class="btn-name">Green</span>
+              </li>
+              <li>
+                <span class="btn-color" data-color="YLW"></span>
+                <span class="btn-name">Yellow</span>
+              </li>
+              <li>
+                <span class="btn-color" data-color="ORG"></span>
+                <span class="btn-name">Orange</span>
+              </li>
+              <li>
+                <span class="btn-color" data-color="RED"></span>
+                <span class="btn-name">Red</span>
+              </li>
+              <li>
+                <span class="btn-color" data-color="PNK"></span>
+                <span class="btn-name">Pink</span>
+              </li>
+            </ul>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="type" class="btn btn-muted" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add</button>
+      </div>
+    </form>
+  </div>
+</aside>

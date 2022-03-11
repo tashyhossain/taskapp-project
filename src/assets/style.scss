@@ -1,0 +1,14 @@
+$blue:    #ECEEFD; // light blue
+$indigo:  #4962E0; // dark purple
+$purple:  #C3D4F5; // light purple
+$teal:    #90E0DE; // light teal
+$cyan:    #E6FBFB; // light cyan
+$grey: #FDFDFD; // light grey
+$light: #F6F8FA; // very light grey
+$dark: #2D2A2B; // dark grey
+
+$body-bg: $blue;
+$body-color: $dark;
+
+@import '../../node_modules/bootstrap/scss/bootstrap.scss';
+@import '../../node_modules/bootstrap-icons/font/bootstrap-icons.css';
