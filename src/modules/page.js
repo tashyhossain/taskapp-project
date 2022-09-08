@@ -1,68 +1,226 @@
-import { format } from 'date-fns'
-import { append, create, wipe } from './helpers'
-import pubsub from './pubsub'
+import Event from './event'
+import Project from './project'
+import Task from './task'
+import { isToday, isAfter, parseISO } from 'date-fns'
+import { v4 as uuidv4 } from 'uuid'
 
-const date = (function() {
-  let dom = document.querySelector('#todays-date')
-  let day = create('span', 'current-day', format(Date.now(), 'EEEE '))
-  let date = document.createTextNode(format(Date.now(), 'MMMM do yyyy'))
-
-  append(dom, day, date)
-  return dom
-})()
-
-const open = function(dom) {
-  dom.classList.remove('narrow')
+export const getPage = function(name) {
+  let page = document.querySelector(`button[data-id="${name}"]`)
+  
+  return { id: page.dataset.id, title: page.dataset.title }
 }
 
-const close = function(dom) {
-  let projects = document.querySelector('#projects-nav') 
+const loadPage = function(page) {
+  let title = document.querySelector('.main__page-title')
+  let content = document.querySelector('.main__tasks')
+  
+  title.textContent = page.title
+  content.innerHTML = ''
+  content.dataset.id = page.id
 
-  if (projects.classList.contains('show')) {
-    projects.classList.remove('show')
-  }
-
-  dom.classList.add('narrow')
+  Event.publish('TASKS-REQUEST', content)
+  Event.publish('PROJECTS-REQUEST', Project.storage())
 }
 
-const deactivate = function(dom) {
-  let views = dom.parentNode.querySelectorAll('button')
-  views.forEach(view => {
-    view.classList.remove('active')
+const loadProjects = function(projects) {
+  let nav = document.querySelector('.nav__projects-list')
+  
+  projects = projects.filter(p => p.id !== 'inbox')
+  nav.innerHTML = ''
+
+  projects.forEach(project => {
+    nav.insertAdjacentHTML('beforeend', `
+      <button class="nav__projects-btn" data-id="${project.id}" data-title="Project: ${project.name}">
+        ${project.name}
+      </button>
+    `)
+
+    let btn = nav.querySelector(`[data-id="${project.id}"]`)
+
+    btn.addEventListener('click', () => {
+      Event.publish('PAGE-REQUEST', { id: btn.dataset.id, title: btn.dataset.title })
+    })
+  })
+
+  nav.insertAdjacentHTML('beforeend', `
+    <button class="nav__projects-form-btn">Add Project</button>
+  `)
+
+  let btn = nav.querySelector('.nav__projects-form-btn')
+  btn.addEventListener('click', (e) => {
+    Event.publish('PROJECT-FORM-REQUEST', nav)
+    nav.removeChild(btn)
   })
 }
 
-const activate = function(view) {
-  let dom = document.querySelector(`#${view}-btn`)
+const loadProjectForm = function(container) {
+  container.insertAdjacentHTML('beforeend', `
+    <form class="nav__projects-form">
+      <input type="text" name="project-color">
+      <input type="text" name="project-name">
+      <button class="nav__projects-add-btn" type="submit">Add Project</button>
+      <button class="nav__projects-cancel-btn" type="button">Cancel</button>
+    </form>
+  `)
+
+  let form = container.querySelector('form')
+  let cancel = container.querySelector('.nav__projects-cancel-btn')
+
+  form.addEventListener('submit', submitProjectForm)
+  cancel.addEventListener('click', closeProjectForm)
+}
+
+const submitProjectForm = function(e) {
+  e.preventDefault()
   
-  deactivate(dom)
-  dom.classList.add('active')
-  return dom
+  let name = e.target.querySelector('[name="project-name"]').value
+  let color = e.target.querySelector('[name="project-color"]').value
+
+  if (Project.has(name)) {
+    alert('This project already exists')
+  } else {
+    Event.publish('PROJECT-SUBMIT', { name, color, tasks: [] })    
+  }
 }
 
-const title = function(view) {
-  let dom = document.querySelector('#page-title')
-  let name = document.querySelector(`[data-view="${view}"]`)
-  dom.textContent = name.getAttribute('data-title')
-  return dom
+const closeProjectForm = function(e) {
+  let form = e.target.parentNode
+
+  form.parentNode.removeChild(form)
+  Event.publish('PROJECTS-REQUEST', Project.storage())
 }
 
-const content = function(view) {
-  let dom = document.querySelector('main')
-  let tasklist = create('div', `${view}-tasklist`)
+const getTasks = function(page) {
+  let tasks, storage = Task.storage()
 
-  wipe(dom)
-  append(dom, tasklist)
-  pubsub.publish(`${view.toUpperCase()}-RENDER`, tasklist)
-  return dom
+  if (page.dataset.id == 'today') {
+    tasks = storage.filter(t => isToday(parseISO(t.date)))
+  } else if (page.dataset.id === 'inbox') {
+    tasks = storage.filter(t => t.project == 'inbox')
+  } else if (page.dataset.id === 'upcoming') {
+    tasks = storage.filter(t => isAfter(parseISO(t.date), new Date()))
+  } else {
+    console.log(page.dataset.id)
+    tasks = Project.storage().find(p => p.id === page.dataset.id).tasks
+  }
+
+  console.log(tasks)
+  Event.publish('RENDER-REQUEST', { page, tasks })
 }
 
-const structurer = function() {
-  pubsub.subscribe('OPEN-REQUEST', open)
-  pubsub.subscribe('CLOSE-REQUEST', close)
-  pubsub.subscribe('PAGE-REQUEST', activate)
-  pubsub.subscribe('PAGE-REQUEST', title)
-  pubsub.subscribe('PAGE-REQUEST', content)
+const loadTasks = function({ page, tasks }) {
+  page.innerHTML = ''
+  tasks.forEach(task => {
+    page.insertAdjacentHTML('beforeend', `
+      <div class="task-item" data-id="${task.id}">
+        <div class="task-content">
+          <div class="task-status">
+            ${task.status ? '<input type="checkbox" checked>'
+                          : '<input type="checkbox">'}
+          </div>
+          <div class="task-name">${task.name}</div>
+          <div class="task-date">${task.date}</div>
+          <div class="task-project">${task.project}</div>
+          <div class="task-tools">
+            <button class="task-edit-btn">Edit</button>
+            <button class="task-delete-btn">Delete</button>
+          </div>
+        </div>
+      </div>
+    `)
+
+    let item = page.querySelector(`[data-id="${task.id}"]`)
+
+    item.querySelector('.task-status input').addEventListener('change', (e) => {
+      e.preventDefault()
+      Event.publish('TASK-CHECK-REQUEST', { page, task, status: e.target.hasAttribute('checked') })
+    })
+
+    item.querySelector('.task-edit-btn').addEventListener('click', (e) => {
+      e.preventDefault()
+      Event.publish('TASK-EDIT-REQUEST', { page, task })
+    })
+
+    item.querySelector('.task-delete-btn').addEventListener('click', (e) => {
+      Event.publish('TASK-DELETE-REQUEST', task)
+    })
+  })
+
+  page.insertAdjacentHTML('afterbegin', `
+    <button class="main__tasks-form-btn" type="button">Add Task</button>
+  `)
+
+  let btn = page.querySelector('.main__tasks-form-btn')
+
+  btn.addEventListener('click', (e) => {
+    Event.publish('TASK-FORM-REQUEST', page)
+    page.removeChild(btn)
+  })
 }
 
-export default structurer()
+export const getTaskForm = function() {
+  let projects = Project.storage()
+  let form = document.createElement('div')
+
+  form.classList.add('tasks-form-container')
+  form.insertAdjacentHTML('afterbegin', `
+    <form class="main__tasks-form">
+      <input type="text" name="task-name">
+      <input type="date" name="task-date">
+      <select name="task-project" id="project-options"></select>
+      <button class="main__tasks-add-btn" type="submit">Add Task</button>
+      <button class="main__tasks-cancel-btn" type="button">Cancel</button>
+    </form>
+  `)
+
+  projects.forEach(project => {
+    form.querySelector('select').insertAdjacentHTML('beforeend', `
+      <option value="${project.name}">${project.name}</option>
+    `)
+  })
+
+  return form
+}
+
+const loadTaskForm = function(container) {
+  container.insertAdjacentElement('afterbegin', getTaskForm())
+
+  let form = container.querySelector('form')
+  let cancel = container.querySelector('.main__tasks-cancel-btn')
+
+  form.addEventListener('submit', submitTaskForm)
+  cancel.addEventListener('click', closeTaskForm)
+}
+
+const submitTaskForm = function(e) {
+  e.preventDefault()
+
+  Event.publish('TASK-SUBMIT', { 
+    page: getPage(document.querySelector('.main__tasks').dataset.id), 
+    task: { 
+      name: e.target.querySelector('[name="task-name"]').value, 
+      date: e.target.querySelector('[name="task-date"]').value, 
+      project: e.target.querySelector('[name="task-project"]').value, 
+      status: false, 
+      id: uuidv4() }
+  })
+}
+
+export const closeTaskForm = function(e) {
+  let content = document.querySelector('.main__tasks')
+  let form = e.target.closest('form')
+
+  form.parentNode.removeChild(form)
+  Event.publish('TASKS-REQUEST', content)
+}
+
+const Page = function() {
+  Event.subscribe('PAGE-REQUEST', loadPage)
+  Event.subscribe('PROJECTS-REQUEST', loadProjects)
+  Event.subscribe('PROJECT-FORM-REQUEST', loadProjectForm)
+  Event.subscribe('TASKS-REQUEST', getTasks)
+  Event.subscribe('RENDER-REQUEST', loadTasks)
+  Event.subscribe('TASK-FORM-REQUEST', loadTaskForm)
+}
+
+export default Page()

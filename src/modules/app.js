@@ -1,77 +1,71 @@
-import html from '../assets/app.html'
-import pubsub from './pubsub'
-import { Project } from './projects'
+import Event from './event'
+import Project from './project'
+import Task from './task'
+import { getPage, getTaskForm, closeTaskForm } from './page'
 
-const app = (function() {
-  let dom = document.querySelector('#app-container')
-
-  dom.insertAdjacentHTML('afterbegin', html)
-  return dom
-})()
-
-const navigation = (function() {
-  let views = document.querySelectorAll('[data-view]')
-
-  views.forEach(view => {
-    let name = view.getAttribute('data-view')
-    view.addEventListener('click', () => {
-      pubsub.publish('PAGE-REQUEST', name)
-    })
-  })
-
-  return views
-})()
-
-const toggle = (function() {
-  let nav = document.querySelector('#nav-container')
-  let btn = document.querySelector('#toggle-btn')
-
-  btn.addEventListener('click', () => {
-    if (nav.classList.contains('narrow')) {
-      pubsub.publish('OPEN-REQUEST', nav)
-    } else {
-      pubsub.publish('CLOSE-REQUEST', nav)
-    }
-  })
-})()
-
-const dropdown = (function() {
-  let nav = document.querySelector('#nav-container')
-  let btn = document.querySelector('#projects-btn')
-
-  btn.addEventListener('click', () => {
-    pubsub.publish('OPEN-REQUEST', nav)
-  })
-})()
-
-const color = (function() {
-  let colors = document.querySelectorAll('#color-options li')
-
-  colors.forEach(color => {
-    color.addEventListener('click', () => {
-      pubsub.publish('RECOLOR-REQUEST', color)
-    })
-  })
-})()
-
-const recolor = function(color) {
-  let current = document.querySelector('#current-color')
-  let data = color.querySelector('.btn-color').getAttribute('data-color')
-  let name = color.querySelector('.btn-name').textContent
-
-  current.querySelector('.btn-color').setAttribute('data-color', data)
-  current.querySelector('.btn-name').textContent = name
-  document.querySelector('#color-input').value = data
+const addProject = function(project) {
+  Project.add(project)
+  Event.publish('PAGE-REQUEST', { id: project.id, title: `Project: ${project.name}` })
 }
 
-const submit = (function() {
-  let form = document.querySelector('#project-form')
+const addTask = function({ page, task }) {
+  Task.add(task)
+  Event.publish('PAGE-REQUEST', page)
+}
 
-  pubsub.subscribe('RECOLOR-REQUEST', recolor)
-  form.addEventListener('submit', e => {
-    let fields = [...form.querySelectorAll('input')].map(i => i.value)
-    pubsub.publish('PROJECT-SUBMITTED', new Project(...fields))
+const markTask = function({ page, task, status }) {
+  Task.mark(task, status)
+  Event.publish('PAGE-REQUEST', getPage(page.dataset.id))
+}
+
+const editTask = function({ page, task }) {
+  let item = page.querySelector(`[data-id="${task.id}"]`)
+
+  item.removeChild(item.querySelector('.task-content'))
+  item.insertAdjacentElement('beforeend', getTaskForm())
+  item.querySelector('[name="task-name"]').value = task.name
+  item.querySelector('[name="task-date"]').value = task.date
+  item.querySelector('[name="task-project"]').value = task.project
+
+  let submit = item.querySelector('.main__tasks-add-btn')
+  let cancel = item.querySelector('.main__tasks-cancel-btn')
+
+  submit.textContent = 'Edit Task'
+  submit.closest('form').addEventListener('submit', submitTaskEdit)
+  cancel.addEventListener('click', closeTaskForm)
+}
+
+const submitTaskEdit = function(e) {
+  e.preventDefault()
+
+  let current = document.querySelector('.main__tasks').dataset.id
+  let task = e.target.closest('.task-item')
+
+  Task.edit({
+    name: e.target.querySelector('[name="task-name"]').value,
+    date: e.target.querySelector('[name="task-date"]').value,
+    project: e.target.querySelector('[name="task-project"]').value,
+    status: false,
+    id: task.dataset.id
   })
-})()
 
-export default app
+  Event.publish('PAGE-REQUEST', getPage(current))
+}
+
+const deleteTask = function(task) {
+  let current = document.querySelector('.main__tasks').dataset.id
+  let project = Project.storage().find(p => p.name == task.project)
+
+  Task.delete(project, task)
+  Event.publish('PAGE-REQUEST', getPage(current))
+}
+
+const App = function() {
+  Event.subscribe('PROJECT-SUBMIT', addProject)
+  Event.subscribe('TASK-SUBMIT', addTask)
+  Event.subscribe('TASK-CHECK-REQUEST', markTask)
+  Event.subscribe('TASK-EDIT-REQUEST', editTask)
+  Event.subscribe('TASK-DELETE-REQUEST', deleteTask)
+}
+
+export default App()
