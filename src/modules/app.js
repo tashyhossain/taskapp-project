@@ -27,8 +27,8 @@ const editTask = function({ page, task }) {
   item.querySelector('[name="task-date"]').value = task.date
   item.querySelector('[name="task-project"]').value = task.project
 
-  let submit = item.querySelector('.main__tasks-add-btn')
-  let cancel = item.querySelector('.main__tasks-cancel-btn')
+  let submit = item.querySelector('.task-submit-btn')
+  let cancel = item.querySelector('.task-cancel-btn')
 
   submit.textContent = 'Edit Task'
   submit.closest('form').addEventListener('submit', submitTaskEdit)
@@ -38,7 +38,7 @@ const editTask = function({ page, task }) {
 const submitTaskEdit = function(e) {
   e.preventDefault()
 
-  let current = document.querySelector('.main__tasks').dataset.id
+  let current = document.querySelector('.main-tasks-list').dataset.id
   let task = e.target.closest('.task-item')
 
   Task.edit({
@@ -53,7 +53,7 @@ const submitTaskEdit = function(e) {
 }
 
 const deleteTask = function(task) {
-  let current = document.querySelector('.main__tasks').dataset.id
+  let current = document.querySelector('.main-tasks-list').dataset.id
   let project = Project.storage().find(p => p.name == task.project)
 
   Task.delete(project, task)

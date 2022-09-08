@@ -11,8 +11,8 @@ export const getPage = function(name) {
 }
 
 const loadPage = function(page) {
-  let title = document.querySelector('.main__page-title')
-  let content = document.querySelector('.main__tasks')
+  let title = document.querySelector('.page-title')
+  let content = document.querySelector('.main-tasks-list')
   
   title.textContent = page.title
   content.innerHTML = ''
@@ -23,14 +23,14 @@ const loadPage = function(page) {
 }
 
 const loadProjects = function(projects) {
-  let nav = document.querySelector('.nav__projects-list')
+  let nav = document.querySelector('.nav-projects-list')
   
   projects = projects.filter(p => p.id !== 'inbox')
   nav.innerHTML = ''
 
   projects.forEach(project => {
     nav.insertAdjacentHTML('beforeend', `
-      <button class="nav__projects-btn" data-id="${project.id}" data-title="Project: ${project.name}">
+      <button class="nav-project-btn" data-id="${project.id}" data-title="Project: ${project.name}">
         ${project.name}
       </button>
     `)
@@ -43,10 +43,10 @@ const loadProjects = function(projects) {
   })
 
   nav.insertAdjacentHTML('beforeend', `
-    <button class="nav__projects-form-btn">Add Project</button>
+    <button class="nav__projects-form-btn show-project-form-btn">Add Project</button>
   `)
 
-  let btn = nav.querySelector('.nav__projects-form-btn')
+  let btn = nav.querySelector('.show-project-form-btn')
   btn.addEventListener('click', (e) => {
     Event.publish('PROJECT-FORM-REQUEST', nav)
     nav.removeChild(btn)
@@ -55,16 +55,16 @@ const loadProjects = function(projects) {
 
 const loadProjectForm = function(container) {
   container.insertAdjacentHTML('beforeend', `
-    <form class="nav__projects-form">
+    <form class="project-form">
       <input type="text" name="project-color">
       <input type="text" name="project-name">
-      <button class="nav__projects-add-btn" type="submit">Add Project</button>
-      <button class="nav__projects-cancel-btn" type="button">Cancel</button>
+      <button class="project-submit-btn" type="submit">Add Project</button>
+      <button class="project-cancel-btn" type="button">Cancel</button>
     </form>
   `)
 
   let form = container.querySelector('form')
-  let cancel = container.querySelector('.nav__projects-cancel-btn')
+  let cancel = container.querySelector('.project-form-cancel-btn')
 
   form.addEventListener('submit', submitProjectForm)
   cancel.addEventListener('click', closeProjectForm)
@@ -147,10 +147,10 @@ const loadTasks = function({ page, tasks }) {
   })
 
   page.insertAdjacentHTML('afterbegin', `
-    <button class="main__tasks-form-btn" type="button">Add Task</button>
+    <button class="show-task-form-btn" type="button">Add Task</button>
   `)
 
-  let btn = page.querySelector('.main__tasks-form-btn')
+  let btn = page.querySelector('.show-task-form-btn')
 
   btn.addEventListener('click', (e) => {
     Event.publish('TASK-FORM-REQUEST', page)
@@ -164,12 +164,12 @@ export const getTaskForm = function() {
 
   form.classList.add('tasks-form-container')
   form.insertAdjacentHTML('afterbegin', `
-    <form class="main__tasks-form">
+    <form class="task-form">
       <input type="text" name="task-name">
       <input type="date" name="task-date">
       <select name="task-project" id="project-options"></select>
-      <button class="main__tasks-add-btn" type="submit">Add Task</button>
-      <button class="main__tasks-cancel-btn" type="button">Cancel</button>
+      <button class="task-submit-btn" type="submit">Add Task</button>
+      <button class="task-cancel-btn" type="button">Cancel</button>
     </form>
   `)
 
@@ -186,7 +186,7 @@ const loadTaskForm = function(container) {
   container.insertAdjacentElement('afterbegin', getTaskForm())
 
   let form = container.querySelector('form')
-  let cancel = container.querySelector('.main__tasks-cancel-btn')
+  let cancel = container.querySelector('.task-cancel-btn')
 
   form.addEventListener('submit', submitTaskForm)
   cancel.addEventListener('click', closeTaskForm)
@@ -196,7 +196,7 @@ const submitTaskForm = function(e) {
   e.preventDefault()
 
   Event.publish('TASK-SUBMIT', { 
-    page: getPage(document.querySelector('.main__tasks').dataset.id), 
+    page: getPage(document.querySelector('.main-tasks-list').dataset.id), 
     task: { 
       name: e.target.querySelector('[name="task-name"]').value, 
       date: e.target.querySelector('[name="task-date"]').value, 
@@ -207,7 +207,7 @@ const submitTaskForm = function(e) {
 }
 
 export const closeTaskForm = function(e) {
-  let content = document.querySelector('.main__tasks')
+  let content = document.querySelector('.main-tasks-list')
   let form = e.target.closest('form')
 
   form.parentNode.removeChild(form)

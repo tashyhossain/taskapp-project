@@ -49,7 +49,6 @@ export default class Task {
       current.name = task.name
       current.date = task.date
 
-      console.log(current)
       Project.save(project)
     }
     
