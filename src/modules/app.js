@@ -38,7 +38,7 @@ const editTask = function({ page, task }) {
 const submitTaskEdit = function(e) {
   e.preventDefault()
 
-  let current = document.querySelector('.main-tasks-list').dataset.id
+  let current = document.querySelector('.tasks-list').dataset.id
   let task = e.target.closest('.task-item')
 
   Task.edit({
@@ -53,7 +53,7 @@ const submitTaskEdit = function(e) {
 }
 
 const deleteTask = function(task) {
-  let current = document.querySelector('.main-tasks-list').dataset.id
+  let current = document.querySelector('.tasks-list').dataset.id
   let project = Project.storage().find(p => p.name == task.project)
 
   Task.delete(project, task)

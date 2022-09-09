@@ -12,7 +12,7 @@ export const getPage = function(name) {
 
 const loadPage = function(page) {
   let title = document.querySelector('.page-title')
-  let content = document.querySelector('.main-tasks-list')
+  let content = document.querySelector('.tasks-list')
   
   title.textContent = page.title
   content.innerHTML = ''
@@ -23,27 +23,46 @@ const loadPage = function(page) {
 }
 
 const loadProjects = function(projects) {
-  let nav = document.querySelector('.nav-projects-list')
+  let nav = document.querySelector('.projects-list')
   
   projects = projects.filter(p => p.id !== 'inbox')
   nav.innerHTML = ''
 
   projects.forEach(project => {
     nav.insertAdjacentHTML('beforeend', `
-      <button class="nav-project-btn" data-id="${project.id}" data-title="Project: ${project.name}">
-        ${project.name}
-      </button>
+      <div class="btn-group">
+        <button type="button" class="btn nav-project-btn" data-id="${project.id}" data-title="Project: ${project.name}">
+          ${project.name}
+        </button>
+        <button type="button" class="btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="visually-hidden">Toggle Dropdown</span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><button class="dropdown-item project-edit-btn">Edit</button></li>
+          <li><button class="dropdown-item project-delete-btn">Delete</button></li>
+        </ul>
+      </div>
     `)
 
     let btn = nav.querySelector(`[data-id="${project.id}"]`)
+    let edit = btn.parentNode.querySelector('.project-edit-btn')
+    let del = btn.parentNode.querySelector('.project-delete-btn')
 
     btn.addEventListener('click', () => {
       Event.publish('PAGE-REQUEST', { id: btn.dataset.id, title: btn.dataset.title })
     })
+
+    edit.addEventListener('click', () => {
+      console.log('EDIT REQUEST')
+    })
+
+    del.addEventListener('click', () => {
+      console.log('DELETE REQUEST')
+    })
   })
 
   nav.insertAdjacentHTML('beforeend', `
-    <button class="nav__projects-form-btn show-project-form-btn">Add Project</button>
+    <button class="show-project-form-btn">Add Project</button>
   `)
 
   let btn = nav.querySelector('.show-project-form-btn')
@@ -64,7 +83,7 @@ const loadProjectForm = function(container) {
   `)
 
   let form = container.querySelector('form')
-  let cancel = container.querySelector('.project-form-cancel-btn')
+  let cancel = container.querySelector('.project-cancel-btn')
 
   form.addEventListener('submit', submitProjectForm)
   cancel.addEventListener('click', closeProjectForm)
@@ -196,7 +215,7 @@ const submitTaskForm = function(e) {
   e.preventDefault()
 
   Event.publish('TASK-SUBMIT', { 
-    page: getPage(document.querySelector('.main-tasks-list').dataset.id), 
+    page: getPage(document.querySelector('.tasks-list').dataset.id), 
     task: { 
       name: e.target.querySelector('[name="task-name"]').value, 
       date: e.target.querySelector('[name="task-date"]').value, 
@@ -207,7 +226,7 @@ const submitTaskForm = function(e) {
 }
 
 export const closeTaskForm = function(e) {
-  let content = document.querySelector('.main-tasks-list')
+  let content = document.querySelector('.tasks-list')
   let form = e.target.closest('form')
 
   form.parentNode.removeChild(form)

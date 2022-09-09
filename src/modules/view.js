@@ -4,14 +4,14 @@ import { format } from 'date-fns'
 const View = function(root) {
   root.innerHTML = `
     <section class="nav">
-      <nav class="nav-pages">
-        <button class="nav-page-btn" data-id="inbox" data-title="Inbox">Inbox</button>
-        <button class="nav-page-btn" data-id="today" data-title="Today's Tasks">Today</button>
-        <button class="nav-page-btn" data-id="upcoming" data-title="Upcoming Tasks">Upcoming</button>
+      <nav class="pages">
+        <button class="page-btn" data-id="inbox" data-title="Inbox">Inbox</button>
+        <button class="page-btn" data-id="today" data-title="Today's Tasks">Today</button>
+        <button class="page-btn" data-id="upcoming" data-title="Upcoming Tasks">Upcoming</button>
       </nav>
-      <nav class="nav-projects">
-        <div class="nav-projects-title">Projects</div>
-        <div class="nav-projects-list"></div>
+      <nav class="projects">
+        <div class="projects-title">Projects</div>
+        <div class="projects-list"></div>
       </nav>
     </section>
     <section class="main">
@@ -19,14 +19,14 @@ const View = function(root) {
         <div class="page-title"></div>
         <div class="current-date"></div>
       </div>
-      <main class="main-tasks">
-        <div class="main-tasks-list"></div>
+      <main class="tasks">
+        <div class="tasks-list"></div>
       </main>
     </section>
   `
 
   let date = root.querySelector('.current-date')
-  let pages = root.querySelectorAll('.nav-page-btn')
+  let pages = root.querySelectorAll('.page-btn')
   
   date.innerHTML = `
     <span class="current-day">${format(new Date(), 'EEEE')}</span>
