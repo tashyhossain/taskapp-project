@@ -1,11 +1,30 @@
 import Event from './event'
 import Project from './project'
 import Task from './task'
-import { getPage, getTaskForm, closeTaskForm } from './page'
+import { getPage, getTaskForm, closeTaskForm, getProjectForm } from './page'
 
 const addProject = function(project) {
   Project.add(project)
   Event.publish('PAGE-REQUEST', { id: project.id, title: `Project: ${project.name}` })
+}
+
+const editProject = function(project) {
+
+}
+
+const checkProject = function(project) {
+  let tasks = project.tasks
+
+  if (tasks.length == 0 || tasks.every(t => t.status)) {
+    Event.publish('PROJECT-DELETE-CONFIRMED', project)
+  } else {
+    Event.publish('PROJECT-CONFIRM-REQUEST', project)
+  }
+}
+
+const deleteProject = function(project) {
+  Project.delete(project)
+  Event.publish('PAGE-REQUEST', getPage('today'))
 }
 
 const addTask = function({ page, task }) {
@@ -62,6 +81,8 @@ const deleteTask = function(task) {
 
 const App = function() {
   Event.subscribe('PROJECT-SUBMIT', addProject)
+  Event.subscribe('PROJECT-DELETE-REQUEST', checkProject)
+  Event.subscribe('PROJECT-DELETE-CONFIRMED', deleteProject)
   Event.subscribe('TASK-SUBMIT', addTask)
   Event.subscribe('TASK-CHECK-REQUEST', markTask)
   Event.subscribe('TASK-EDIT-REQUEST', editTask)

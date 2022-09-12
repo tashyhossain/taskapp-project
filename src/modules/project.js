@@ -32,7 +32,7 @@ export default class Project {
 
     Project.set(projects)
   }
-
+  
   static delete(project) {
     let projects = Project.storage()
     let deleted = projects.filter(p => p.id != project.id)

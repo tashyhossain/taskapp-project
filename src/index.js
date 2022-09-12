@@ -1,5 +1,4 @@
 import './style.scss'
-import * as bootstrap from 'bootstrap'
 import Event from './modules/event'
 import View from './modules/view'
 import Page from './modules/page'
