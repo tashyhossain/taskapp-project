@@ -5,34 +5,6 @@ import { getPage } from './page'
 import { v4 as uuidv4 } from 'uuid'
 import { format } from 'date-fns'
 
-const getColorOptions = function() {
-  let container = document.createElement('div')
-
-  container.classList.add('dropdown')
-  container.innerHTML = `
-    <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
-    <ul class="project-colors dropdown-menu">
-      <li data-color="C4C4C4">Default (Grey)</li>
-      <li data-color="1669EE">Blue</li>
-      <li data-color="7316EE">Purple</li>
-      <li data-color="EE1689">Pink</li>
-      <li data-color="F11045">Red</li>
-      <li data-color="EE7B16">Orange</li>
-      <li data-color="F3D71C">Yellow</li>
-      <li data-color="8BF31C">Green</li>
-    </ul>
-  `
-  let btn = container.querySelector('button')
-  container.querySelectorAll('li').forEach(item => {
-    item.addEventListener('click', () => {
-      btn.dataset.select = item.dataset.color
-      btn.textContent = item.textContent
-    })
-  })
-
-  return container
-}
-
 const getProjectForm = function() {
   let container = document.createElement('div')
   
@@ -49,6 +21,21 @@ const getProjectForm = function() {
             <input type="text" name="project-name" id="project-name-input">
             <label for="project-color-input">Color:</label>
             <input type="hidden" name="project-color" id="project-color-input">
+            <div class="dropdown project-colors">
+              <button type="button" class="btn dropdown-toggle color-select-btn" data-bs-toggle="dropdown" aria-expanded="false" data-select="GREY">
+                Default (Grey)
+              </button>
+              <ul class="dropdown-menu project-colors-list">
+                <li data-color="GREY">Default (Grey)</li>
+                <li data-color="BLUE">Blue</li>
+                <li data-color="PURPLE">Purple</li>
+                <li data-color="PINK">Pink</li>
+                <li data-color="RED">Red</li>
+                <li data-color="ORANGE">Orange</li>
+                <li data-color="YELLOW">Yellow</li>
+                <li data-color="GREEN">Green</li>
+              </ul>
+            </div>
           </div>
           <div class="modal-footer">
             <button class="project-submit-btn" type="submit">Add Project</button>
@@ -59,9 +46,18 @@ const getProjectForm = function() {
     </div>
   `)
 
-  let body = container.querySelector('.modal-body')
-  body.insertAdjacentElement('beforeend', getColorOptions())
-  
+  let content = container.querySelector('.project-colors')
+  let color = container.querySelector('[name="project-color"]')
+  let btn = content.querySelector('.color-select-btn')
+
+  content.querySelectorAll('li').forEach(item => {
+    item.addEventListener('click', () => {
+      btn.dataset.select = item.dataset.color
+      btn.textContent = item.textContent
+      color.value = item.dataset.color
+    })
+  })
+
   return container
 }
 
@@ -88,9 +84,10 @@ const loadProjectForm = function(body) {
 
   let container = document.querySelector('.form-container')
   let content = container.querySelector('.modal')
-  
-  content.id = 'project-form'
-  container.querySelector('form').addEventListener('submit', submitProjectForm)
+  let form = content.querySelector('form')
+
+  content.id = 'project.id'
+  form.addEventListener('submit', submitProjectForm)
 
   Event.publish('MODAL-REQUEST', container)
 }
@@ -100,13 +97,18 @@ const loadProjectEdit = function(project) {
 
   let container = document.querySelector('.form-container')
   let content = container.querySelector('.modal')
+  let color = content.querySelector(`li[data-color="${project.color}"]`)
+  let btn = content.querySelector('.color-select-btn')
 
   content.id = `project-edit-form`
+  btn.textContent = color.textContent
+
   content.querySelector('form').dataset.id = project.id
   content.querySelector('[name="project-name"]').value = project.name
   content.querySelector('[name="project-color"]').value = project.color
 
-  content.querySelector('form').addEventListener('submit', submitProjectEdit)
+  let form = content.querySelector('form')
+  form.addEventListener('submit', submitProjectEdit)
 
   Event.publish('MODAL-REQUEST', container)
 }

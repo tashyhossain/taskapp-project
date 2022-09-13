@@ -10,6 +10,10 @@ export const getPage = function(name) {
   return { id: page.dataset.id, title: page.dataset.title }
 }
 
+export const getProjectPage = function(project) {
+  return { id: project.id, title: `Project: ${project.name}` }
+}
+
 const loadPage = function(page) {
   let title = document.querySelector('.page-title')
   let content = document.querySelector('.tasks-list')
@@ -32,7 +36,7 @@ const loadProjects = function(projects) {
     nav.insertAdjacentHTML('beforeend', `
       <div class="btn-group">
         <button type="button" class="btn nav-project-btn" data-id="${project.id}" data-title="Project: ${project.name}">
-          ${project.name}
+          ${project.color} - ${project.name}
         </button>
         <button type="button" class="btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
           <span class="visually-hidden">Toggle Dropdown</span>
@@ -126,7 +130,11 @@ const loadTasks = function({ page, tasks }) {
 
     item.querySelector('.task-status input').addEventListener('change', (e) => {
       e.preventDefault()
-      Event.publish('TASK-CHECK-REQUEST', { page, task, status: e.target.hasAttribute('checked') })
+      Event.publish('TASK-CHECK-REQUEST', { 
+        page: page.dataset.id, 
+        task, 
+        status: e.target.hasAttribute('checked') 
+      })
     })
 
     item.querySelector('.task-edit-btn').addEventListener('click', (e) => {

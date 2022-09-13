@@ -1,11 +1,11 @@
 import Event from './event'
 import Project from './project'
 import Task from './task'
-import { getPage } from './page'
+import { getPage, getProjectPage } from './page'
 
 const addProject = function(project) {
   Project.add(project)
-  Event.publish('PAGE-REQUEST', { id: project.id, title: `Project: ${project.name}` })
+  Event.publish('PAGE-REQUEST', getProjectPage(project))
 }
 
 const editProject = function(project) {
@@ -17,7 +17,7 @@ const editProject = function(project) {
 
   project.tasks = tasks
   Project.save(project)
-  Event.publish('PAGE-REQUEST', { id: project.id, title: `Project: ${project.name}` })
+  Event.publish('PAGE-REQUEST', getProjectPage(project))
 }
 
 const checkProject = function(project) {
@@ -42,7 +42,7 @@ const addTask = function({ page, task }) {
 
 const markTask = function({ page, task, status }) {
   Task.mark(task, status)
-  Event.publish('PAGE-REQUEST', getPage(page.dataset.id))
+  Event.publish('PAGE-REQUEST', getPage(page))
 }
 
 const editTask = function({ page, task}) {
@@ -51,11 +51,11 @@ const editTask = function({ page, task}) {
 }
 
 const deleteTask = function(task) {
-  let current = document.querySelector('.tasks-list').dataset.id
   let project = Project.storage().find(p => p.name == task.project)
+  let page = document.querySelector('.tasks-list').dataset.id
 
   Task.delete(project, task)
-  Event.publish('PAGE-REQUEST', getPage(current))
+  Event.publish('PAGE-REQUEST', getPage(page))
 }
 
 const App = function() {
