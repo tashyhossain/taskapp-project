@@ -1,7 +1,8 @@
 import './style.scss'
 import Event from './modules/event'
 import View from './modules/view'
-import Page from './modules/page'
+import Page, { getPage } from './modules/page'
+import Form from './modules/form'
 import App from './modules/app'
 import Project from './modules/project'
 
@@ -16,11 +17,6 @@ const initialize = (function() {
       id: 'inbox'
     }])
   }
-
-  let page = document.querySelector('[data-id="today"]')
-
-  Event.publish('PAGE-REQUEST', { 
-    id: page.dataset.id, 
-    title: page.dataset.title 
-  })
+  
+  Event.publish('PAGE-REQUEST', getPage('today'))
 })()

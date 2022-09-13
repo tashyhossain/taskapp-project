@@ -1,7 +1,7 @@
 import Event from './event'
 import Project from './project'
 import Task from './task'
-import { getPage, getTaskForm, closeTaskForm, getProjectForm } from './page'
+import { getPage } from './page'
 
 const addProject = function(project) {
   Project.add(project)
@@ -45,38 +45,9 @@ const markTask = function({ page, task, status }) {
   Event.publish('PAGE-REQUEST', getPage(page.dataset.id))
 }
 
-const editTask = function({ page, task }) {
-  let item = page.querySelector(`[data-id="${task.id}"]`)
-
-  item.removeChild(item.querySelector('.task-content'))
-  item.insertAdjacentElement('beforeend', getTaskForm())
-  item.querySelector('[name="task-name"]').value = task.name
-  item.querySelector('[name="task-date"]').value = task.date
-  item.querySelector('[name="task-project"]').value = task.project
-
-  let submit = item.querySelector('.task-submit-btn')
-  let cancel = item.querySelector('.task-cancel-btn')
-
-  submit.textContent = 'Edit Task'
-  submit.closest('form').addEventListener('submit', submitTaskEdit)
-  cancel.addEventListener('click', closeTaskForm)
-}
-
-const submitTaskEdit = function(e) {
-  e.preventDefault()
-
-  let current = document.querySelector('.tasks-list').dataset.id
-  let task = e.target.closest('.task-item')
-
-  Task.edit({
-    name: e.target.querySelector('[name="task-name"]').value,
-    date: e.target.querySelector('[name="task-date"]').value,
-    project: e.target.querySelector('[name="task-project"]').value,
-    status: false,
-    id: task.dataset.id
-  })
-
-  Event.publish('PAGE-REQUEST', getPage(current))
+const editTask = function({ page, task}) {
+  Task.edit(task)
+  Event.publish('PAGE-REQUEST', page)
 }
 
 const deleteTask = function(task) {
@@ -93,8 +64,8 @@ const App = function() {
   Event.subscribe('PROJECT-DELETE-REQUEST', checkProject)
   Event.subscribe('PROJECT-DELETE-CONFIRMED', deleteProject)
   Event.subscribe('TASK-SUBMIT', addTask)
+  Event.subscribe('TASK-EDIT-SUBMIT', editTask)
   Event.subscribe('TASK-CHECK-REQUEST', markTask)
-  Event.subscribe('TASK-EDIT-REQUEST', editTask)
   Event.subscribe('TASK-DELETE-REQUEST', deleteTask)
 }
 
