@@ -74,12 +74,23 @@ const loadProjects = function(projects) {
   btn.addEventListener('click', loadProjectForm)
 }
 
+const loadModal = function(container) {
+  let content = container.querySelector('.modal')
+  let modal = new bootstrap.Modal(content)
+
+  modal.show()
+
+  content.addEventListener('hidden.bs.modal', () => {
+    document.body.removeChild(container)
+  })
+}
+
 export const getProjectForm = function() {
   let container = document.createElement('div')
   
   container.classList.add('form-container')
   container.insertAdjacentHTML('afterbegin', `
-    <div class="modal fade" tabindex="-1" id="project-form">
+    <div class="modal fade" tabindex="-1">
       <div class="modal-dialog">
         <form class="project-form modal-content">
           <div class="modal-header">
@@ -100,25 +111,35 @@ export const getProjectForm = function() {
     </div>
   `)
 
-  container.querySelector('form').addEventListener('submit', submitProjectForm)
-
   return container
 }
 
 const loadProjectForm = function() {
-  if (!document.querySelector('.form-container')) {
-    document.body.insertAdjacentElement('beforeend', getProjectForm())
-  }
+  document.body.insertAdjacentElement('beforeend', getProjectForm())
 
-  let modal = new bootstrap.Modal(document.querySelector('#project-form'))
-  modal.show()
+  let container = document.querySelector('.form-container')
+  let content = container.querySelector('.modal')
+  
+  content.id = 'project-form'
+  container.querySelector('form').addEventListener('submit', submitProjectForm)
+
+  Event.publish('MODAL-REQUEST', container)
 }
 
-const closeProjectForm = function(modal) {
-  let container = document.querySelector('.form-container')
+const loadProjectEdit = function(project) {
+  document.body.insertAdjacentElement('beforeend', getProjectForm())
 
-  modal.hide()
-  document.body.removeChild(container)
+  let container = document.querySelector('.form-container')
+  let content = container.querySelector('.modal')
+
+  content.id = `project-edit-form`
+  content.querySelector('form').dataset.id = project.id
+  content.querySelector('[name="project-name"]').value = project.name
+  content.querySelector('[name="project-color"]').value = project.color
+
+  content.querySelector('form').addEventListener('submit', submitProjectEdit)
+
+  Event.publish('MODAL-REQUEST', container)
 }
 
 const getProjectAlert = function(modal) {
@@ -149,9 +170,22 @@ const submitProjectForm = function(e) {
   if (Project.has(name)) {
     getProjectAlert(modal)
   } else {
-    closeProjectForm(bootstrap.Modal.getInstance(modal))
+    bootstrap.Modal.getInstance(modal).hide()
     Event.publish('PROJECT-SUBMIT', { name, color, tasks: [] })    
   }
+}
+
+const submitProjectEdit = function(e) {
+  e.preventDefault()
+
+  let modal = e.target.closest('.modal')
+  bootstrap.Modal.getInstance(modal).hide()
+
+  Event.publish('PROJECT-EDIT-SUBMIT', {
+    id: e.target.closest('form').dataset.id,
+    name: e.target.querySelector('[name="project-name"]').value,
+    color: e.target.querySelector('[name="project-color"]').value
+  })
 }
 
 const getDeleteForm = function() {
@@ -167,8 +201,10 @@ const getDeleteForm = function() {
           </div>
           <div class="modal-body"></div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-            <button type="button" class="btn btn-primary confirm-delete-btn">Yes</button>
+            <form class="confirmation-form">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+              <button type="submit" class="btn btn-primary confirm-delete-btn">Yes</button>
+            </form>
           </div>
         </div>
       </div>
@@ -178,27 +214,24 @@ const getDeleteForm = function() {
   return container
 }
 
-const submitDeleteForm = function(project) {
-  if (!document.querySelector('.confirmation-container')) {
-    document.body.insertAdjacentElement('beforeend', getDeleteForm())
-  }
+const loadDeleteForm = function(project) {
+  document.body.insertAdjacentElement('beforeend', getDeleteForm())
 
-  let container = document.querySelector('#confirmation-form')
+  let container = document.querySelector('.confirmation-container')
+  let content = container.querySelector('#confirmation-form')
   let tasks = project.tasks.filter(t => t.status == false).length
   
-  container.querySelector('.modal-body').innerHTML = `
+  content.querySelector('.modal-body').innerHTML = `
     <p>${project.name} has ${tasks} incomplete task${tasks == 1 ? '' : 's'}.</p>
     <p>Do you still want to delete ${project.name}?</p>
   `
 
-  let modal = new bootstrap.Modal(container)
-  modal.show()
-
-  container.querySelector('.confirm-delete-btn').addEventListener('click', () => {
-    modal.hide()  
+  let form = content.querySelector('form')
+  form.addEventListener('submit', () => {
     Event.publish('PROJECT-DELETE-CONFIRMED', project)
   })
 
+  Event.publish('MODAL-REQUEST', container)
 }
 
 const getTasks = function(page) {
@@ -329,7 +362,9 @@ const Page = function() {
   Event.subscribe('PAGE-REQUEST', loadPage)
   Event.subscribe('PROJECTS-REQUEST', loadProjects)
   Event.subscribe('PROJECT-FORM-REQUEST', loadProjectForm)
-  Event.subscribe('PROJECT-CONFIRM-REQUEST', submitDeleteForm)
+  Event.subscribe('PROJECT-EDIT-REQUEST', loadProjectEdit)
+  Event.subscribe('MODAL-REQUEST', loadModal)
+  Event.subscribe('PROJECT-CONFIRM-REQUEST', loadDeleteForm)
   Event.subscribe('TASKS-REQUEST', getTasks)
   Event.subscribe('RENDER-REQUEST', loadTasks)
   Event.subscribe('TASK-FORM-REQUEST', loadTaskForm)

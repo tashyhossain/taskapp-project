@@ -9,7 +9,15 @@ const addProject = function(project) {
 }
 
 const editProject = function(project) {
+  let tasks = Project.storage().find(p => p.id == project.id).tasks
 
+  tasks.forEach(task => {
+    task.project = project.name
+  })
+
+  project.tasks = tasks
+  Project.save(project)
+  Event.publish('PAGE-REQUEST', { id: project.id, title: `Project: ${project.name}` })
 }
 
 const checkProject = function(project) {
@@ -81,6 +89,7 @@ const deleteTask = function(task) {
 
 const App = function() {
   Event.subscribe('PROJECT-SUBMIT', addProject)
+  Event.subscribe('PROJECT-EDIT-SUBMIT', editProject)
   Event.subscribe('PROJECT-DELETE-REQUEST', checkProject)
   Event.subscribe('PROJECT-DELETE-CONFIRMED', deleteProject)
   Event.subscribe('TASK-SUBMIT', addTask)
