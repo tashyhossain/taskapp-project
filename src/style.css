@@ -1,0 +1,80 @@
+form.project-form label,
+form.project-form input,
+button.color-select-btn {
+  width: 100%;
+}
+
+input[name="project-name"]:focus {
+  outline: none;
+}
+
+button.color-select-btn {
+  border-radius: 3px;
+  border: 1px solid #767676;
+  background: #FFFFFF;
+}
+
+ul.project-colors-list {
+  cursor: default;
+}
+
+ul.project-colors-list li,
+button.color-select-btn {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  cursor: pointer;
+}
+
+ul.project-colors-list li:hover {
+  background: #EFEFEF;
+}
+
+button.color-select-btn .color-name {
+  margin-right: 5px;
+}
+
+[data-color] .color-sample {
+  width: 10px;
+  height: 10px;
+  margin: 0 10px;
+  border-radius: 50%;
+}
+
+[data-color] .color-name {
+  flex: 1;
+  text-align: left;
+  font-size: 0.9em;
+}
+
+[data-color="GREY"] .color-sample {
+  background: #C4C4C4;
+}
+
+[data-color="BLUE"] .color-sample {
+  background: #1669EE;
+}
+
+[data-color="PURPLE"] .color-sample {
+  background: #7316EE;
+}
+
+[data-color="PINK"] .color-sample {
+  background: #EE1689;
+}
+
+[data-color="RED"] .color-sample {
+  background: #F11045;
+}
+
+[data-color="ORANGE"] .color-sample {
+  background: #EE7B16;
+}
+
+[data-color="YELLOW"] .color-sample {
+  background: #F3D71C;
+}
+
+[data-color="GREEN"] .color-sample {
+  background: #8BF31C;
+}

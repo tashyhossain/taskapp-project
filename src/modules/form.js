@@ -11,7 +11,7 @@ const getProjectForm = function() {
   container.classList.add('form-container')
   container.insertAdjacentHTML('afterbegin', `
     <div class="modal fade" tabindex="-1">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-sm">
         <form class="project-form modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Add Project</h5>
@@ -22,24 +22,47 @@ const getProjectForm = function() {
             <label for="project-color-input">Color:</label>
             <input type="hidden" name="project-color" id="project-color-input">
             <div class="dropdown project-colors">
-              <button type="button" class="btn dropdown-toggle color-select-btn" data-bs-toggle="dropdown" aria-expanded="false" data-select="GREY">
-                Default (Grey)
+              <button type="button" class="dropdown-toggle color-select-btn" data-bs-toggle="dropdown" aria-expanded="false">
               </button>
               <ul class="dropdown-menu project-colors-list">
-                <li data-color="GREY">Default (Grey)</li>
-                <li data-color="BLUE">Blue</li>
-                <li data-color="PURPLE">Purple</li>
-                <li data-color="PINK">Pink</li>
-                <li data-color="RED">Red</li>
-                <li data-color="ORANGE">Orange</li>
-                <li data-color="YELLOW">Yellow</li>
-                <li data-color="GREEN">Green</li>
+                <li data-color="GREY">
+                  <span class="color-sample"></span>
+                  <span class="color-name">Grey</span>
+                </li>
+                <li data-color="BLUE">
+                  <span class="color-sample"></span>
+                  <span class="color-name">Blue</span>
+                </li>
+                <li data-color="PURPLE">
+                  <span class="color-sample"></span>
+                  <span class="color-name">Purple</span>  
+                </li>
+                <li data-color="PINK">
+                  <span class="color-sample"></span>
+                  <span class="color-name">Pink</span> 
+                </li>
+                <li data-color="RED">
+                  <span class="color-sample"></span>
+                  <span class="color-name">Red</span> 
+                </li>
+                <li data-color="ORANGE">
+                  <span class="color-sample"></span>
+                  <span class="color-name">Orange</span> 
+                </li>
+                <li data-color="YELLOW">
+                  <span class="color-sample"></span>
+                  <span class="color-name">Yellow</span> 
+                </li>
+                <li data-color="GREEN">
+                  <span class="color-sample"></span>
+                  <span class="color-name">Green</span> 
+                </li>
               </ul>
             </div>
           </div>
           <div class="modal-footer">
-            <button class="project-submit-btn" type="submit">Add Project</button>
-            <button class="project-cancel-btn" type="button" data-bs-dismiss="modal">Cancel</button>
+            <button class="btn btn-primary project-submit-btn" type="submit">Add Project</button>
+            <button class="btn btn-secondary project-cancel-btn" type="button" data-bs-dismiss="modal">Cancel</button>
           </div>
         </form>
       </div>
@@ -47,17 +70,19 @@ const getProjectForm = function() {
   `)
 
   let content = container.querySelector('.project-colors')
-  let color = container.querySelector('[name="project-color"]')
-  let btn = content.querySelector('.color-select-btn')
+  let input = container.querySelector('[name="project-color"]')
+  let btn = container.querySelector('.color-select-btn')
 
   content.querySelectorAll('li').forEach(item => {
     item.addEventListener('click', () => {
-      btn.dataset.select = item.dataset.color
-      btn.textContent = item.textContent
-      color.value = item.dataset.color
+      btn.dataset.color = item.dataset.color
+      input.value = item.dataset.color
+      Event.publish('COLOR-SELECT-REQUEST', { content, btn })
     })
   })
 
+  if (!btn.dataset.color) btn.dataset.color = 'GREY'
+  Event.publish('COLOR-SELECT-REQUEST', { content, btn })
   return container
 }
 
@@ -79,6 +104,13 @@ const getProjectAlert = function(modal) {
   }
 }
 
+const loadColorSelect = function({ content, btn }) {
+  let color = btn.dataset.color
+  let template = content.querySelector(`li[data-color="${color}"]`)
+  
+  btn.innerHTML = template.innerHTML
+}
+
 const loadProjectForm = function(body) {
   body.insertAdjacentElement('beforeend', getProjectForm())
 
@@ -97,17 +129,18 @@ const loadProjectEdit = function(project) {
 
   let container = document.querySelector('.form-container')
   let content = container.querySelector('.modal')
-  let color = content.querySelector(`li[data-color="${project.color}"]`)
-  let btn = content.querySelector('.color-select-btn')
-
-  content.id = `project-edit-form`
-  btn.textContent = color.textContent
-
-  content.querySelector('form').dataset.id = project.id
-  content.querySelector('[name="project-name"]').value = project.name
-  content.querySelector('[name="project-color"]').value = project.color
-
   let form = content.querySelector('form')
+
+  content.id = 'project-edit-form'
+  form.dataset.id = project.id
+  form.querySelector('[name="project-name"]').value = project.name
+  form.querySelector('[name="project-color"]').value = project.color
+
+  let btn = form.querySelector('.color-select-btn')
+
+  btn.dataset.color = project.color
+  Event.publish('COLOR-SELECT-REQUEST', { content, btn })
+
   form.addEventListener('submit', submitProjectEdit)
 
   Event.publish('MODAL-REQUEST', container)
@@ -119,6 +152,9 @@ const submitProjectForm = function(e) {
   let modal = e.target.closest('.modal')
   let name = e.target.querySelector('[name="project-name"]').value
   let color = e.target.querySelector('[name="project-color"]').value
+  let select = e.target.querySelector('.color-select-btn')
+
+  color = select.dataset.color
 
   if (Project.has(name)) {
     getProjectAlert(modal)
@@ -134,6 +170,7 @@ const submitProjectEdit = function(e) {
   let modal = e.target.closest('.modal')
   bootstrap.Modal.getInstance(modal).hide()
 
+  console.log(e.target.querySelector('[name="project-color"]').value)
   Event.publish('PROJECT-EDIT-SUBMIT', {
     id: e.target.closest('form').dataset.id,
     name: e.target.querySelector('[name="project-name"]').value,
@@ -197,6 +234,12 @@ const getTaskForm = function() {
     <form class="task-form">
       <input type="text" name="task-name">
       <input type="date" name="task-date">
+      <select name="task-priority" id="priority-options">
+        <option value="1">Low</option>
+        <option value="2">Mid</option>
+        <option value="3">High</option>
+        <option value="4">Urgent</option>
+      </select>
       <select name="task-project" id="project-options"></select>
       <button class="task-submit-btn" type="submit">Add Task</button>
       <button class="task-cancel-btn" type="button">Cancel</button>
@@ -208,7 +251,7 @@ const getTaskForm = function() {
   console.log(date.defaultValue)
 
   projects.forEach(project => {
-    form.querySelector('select').insertAdjacentHTML('beforeend', `
+    form.querySelector('[name="task-project"]').insertAdjacentHTML('beforeend', `
       <option value="${project.name}">${project.name}</option>
     `)
 
@@ -238,6 +281,7 @@ const submitTaskForm = function(e) {
     task: { 
       name: e.target.querySelector('[name="task-name"]').value, 
       date: e.target.querySelector('[name="task-date"]').value, 
+      priority: e.target.querySelector('[name="task-priority"]').value,
       project: e.target.querySelector('[name="task-project"]').value, 
       status: false, 
       id: uuidv4() }
@@ -251,6 +295,7 @@ const loadTaskEdit = function({ page, task }) {
   item.insertAdjacentElement('beforeend', getTaskForm())
   item.querySelector('[name="task-name"]').value = task.name
   item.querySelector('[name="task-date"]').value = task.date
+  item.querySelector('[name="task-priority"').value = task.priority
   item.querySelector('[name="task-project"]').value = task.project
 
   let submit = item.querySelector('.task-submit-btn')
@@ -272,6 +317,7 @@ const submitTaskEdit = function(e) {
     task: {
       name: e.target.querySelector('[name="task-name"]').value,
       date: e.target.querySelector('[name="task-date"]').value,
+      priority: e.target.querySelector('[name="task-priority"').value,
       project: e.target.querySelector('[name="task-project"]').value,
       status: false,
       id: task.dataset.id
@@ -289,6 +335,7 @@ export const closeTaskForm = function(e) {
 
 const Form = function() {
   Event.subscribe('PROJECT-FORM-REQUEST', loadProjectForm)
+  Event.subscribe('COLOR-SELECT-REQUEST', loadColorSelect)
   Event.subscribe('PROJECT-EDIT-REQUEST', loadProjectEdit)
   Event.subscribe('PROJECT-CONFIRM-REQUEST', loadConfirmation)
   Event.subscribe('TASK-FORM-REQUEST', loadTaskForm)

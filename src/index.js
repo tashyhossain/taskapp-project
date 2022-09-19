@@ -1,4 +1,5 @@
 import './style.scss'
+import './style.css'
 import Event from './modules/event'
 import View from './modules/view'
 import Page, { getPage } from './modules/page'

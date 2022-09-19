@@ -10,10 +10,11 @@ const Event = function(cache = {}) {
     },
     
     subscribe: function(event, handler) {
-      console.log(`SUBSCRIBE: ${event} for ${handler}`)
       cache[event] = cache[event] || []
       cache[event].push(handler)
-    }
+    },
+    
+    cache
   }
 }
 

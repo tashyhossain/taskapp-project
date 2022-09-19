@@ -102,6 +102,8 @@ const getTasks = function(page) {
     tasks = Project.storage().find(p => p.id === page.dataset.id).tasks
   }
 
+  tasks = tasks.sort((a, b) => a.priority > b.priority ? -1 : 1)
+
   Event.publish('RENDER-REQUEST', { page, tasks })
 }
 
@@ -117,6 +119,7 @@ const loadTasks = function({ page, tasks }) {
           </div>
           <div class="task-name">${task.name}</div>
           <div class="task-date">${task.date}</div>
+          <div class="task-priority">${task.priority}</div>
           <div class="task-project">${task.project}</div>
           <div class="task-tools">
             <button class="task-edit-btn">Edit</button>
