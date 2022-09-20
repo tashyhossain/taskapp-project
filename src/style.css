@@ -14,67 +14,116 @@ button.color-select-btn {
   background: #FFFFFF;
 }
 
-ul.project-colors-list {
-  cursor: default;
-}
-
 ul.project-colors-list li,
-button.color-select-btn {
+ul.task-project-list li,
+button.color-select-btn,
+button.project-select-btn {
   display: flex;
   align-items: center;
   padding: 5px;
   cursor: pointer;
 }
 
-ul.project-colors-list li:hover {
+ul.project-colors-list li:hover,
+ul.task-priority-list li:hover,
+ul.task-project-list li:hover {
   background: #EFEFEF;
 }
 
-button.color-select-btn .color-name {
+ul.project-colors-list li .color-name,
+button.color-select-btn .color-name,
+ul.task-priority-list li .priority-name,
+button.priority-select-btn .priority-name,
+ul.task-project-list li .project-name,
+button.project-select-btn .project-name {
+  flex: 1;
   margin-right: 5px;
+  text-align: left;
+  font-size: 0.9em;
 }
 
-[data-color] .color-sample {
+ul.project-colors-list li .color-sample,
+ul.task-project-list li .project-color,
+button.color-select-btn .color-sample,
+button.project-select-btn .project-color {
   width: 10px;
   height: 10px;
   margin: 0 10px;
   border-radius: 50%;
 }
 
-[data-color] .color-name {
-  flex: 1;
-  text-align: left;
-  font-size: 0.9em;
+ul.task-priority-list li:hover {
+  background: #EFEFEF;
 }
 
-[data-color="GREY"] .color-sample {
+[data-color="null"] .project-color {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+[data-color="GREY"] .color-sample,
+[data-color="GREY"] .project-color {
   background: #C4C4C4;
 }
 
-[data-color="BLUE"] .color-sample {
+[data-color="BLUE"] .color-sample,
+[data-color="BLUE"] .project-color {
   background: #1669EE;
 }
 
-[data-color="PURPLE"] .color-sample {
+[data-color="PURPLE"] .color-sample,
+[data-color="PURPLE"] .project-color {
   background: #7316EE;
 }
 
-[data-color="PINK"] .color-sample {
+[data-color="PINK"] .color-sample,
+[data-color="PINK"] .project-color {
   background: #EE1689;
 }
 
-[data-color="RED"] .color-sample {
+[data-color="RED"] .color-sample,
+[data-color="RED"] .project-color {
   background: #F11045;
 }
 
-[data-color="ORANGE"] .color-sample {
+[data-color="ORANGE"] .color-sample,
+[data-color="ORANGE"] .project-color {
   background: #EE7B16;
 }
 
-[data-color="YELLOW"] .color-sample {
+[data-color="YELLOW"] .color-sample,
+[data-color="YELLOW"] .project-color {
   background: #F3D71C;
 }
 
-[data-color="GREEN"] .color-sample {
+[data-color="GREEN"] .color-sample,
+[data-color="GREEN"] .project-color {
   background: #8BF31C;
+}
+
+li[data-value="0"] {
+  display: none;
+}
+
+[data-value="1"] .priority-icon {
+  color: #F3D71C;
+}
+
+[data-value="2"] .priority-icon {
+  color: #EE7B16;
+}
+
+[data-value="3"] .priority-icon {
+  color: #F11045;
+}
+
+[data-value="4"] .priority-icon {
+  color: #7316EE;
+}
+
+ul.task-project-list li .project-color {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

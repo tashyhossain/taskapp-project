@@ -1,5 +1,6 @@
 import './style.scss'
 import './style.css'
+import 'bootstrap-icons/font/bootstrap-icons.css'
 import Event from './modules/event'
 import View from './modules/view'
 import Page, { getPage } from './modules/page'

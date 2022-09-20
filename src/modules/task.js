@@ -48,6 +48,7 @@ export default class Task {
     } else {
       current.name = task.name
       current.date = task.date
+      current.priority = task.priority
 
       Project.save(project)
     }

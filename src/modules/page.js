@@ -38,8 +38,8 @@ const loadProjects = function(projects) {
         <button type="button" class="btn nav-project-btn" data-id="${project.id}" data-title="Project: ${project.name}">
           ${project.color} - ${project.name}
         </button>
-        <button type="button" class="btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-          <span class="visually-hidden">Toggle Dropdown</span>
+        <button type="button" class="btn dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-three-dots-vertical"></i>
         </button>
         <ul class="dropdown-menu">
           <li><button class="dropdown-item project-edit-btn">Edit</button></li>
@@ -121,9 +121,14 @@ const loadTasks = function({ page, tasks }) {
           <div class="task-date">${task.date}</div>
           <div class="task-priority">${task.priority}</div>
           <div class="task-project">${task.project}</div>
-          <div class="task-tools">
-            <button class="task-edit-btn">Edit</button>
-            <button class="task-delete-btn">Delete</button>
+          <div class="dropdown task-tools">
+            <button type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <button class="task-edit-btn">Edit</button>
+              <button class="task-delete-btn">Delete</button>
+            </ul>
           </div>
         </div>
       </div>

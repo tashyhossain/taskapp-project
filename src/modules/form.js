@@ -69,20 +69,25 @@ const getProjectForm = function() {
     </div>
   `)
 
-  let content = container.querySelector('.project-colors')
   let input = container.querySelector('[name="project-color"]')
-  let btn = container.querySelector('.color-select-btn')
+  let selection = container.querySelector('.color-select-btn')
+
+  if (!selection.dataset.color) selection.dataset.color = 'GREY'
+  input.value = selection.dataset.color
+
+  let content = container.querySelector('.project-colors-list')
 
   content.querySelectorAll('li').forEach(item => {
     item.addEventListener('click', () => {
-      btn.dataset.color = item.dataset.color
+      selection.dataset.color = item.dataset.color
+      selection.innerHTML = item.innerHTML
+
       input.value = item.dataset.color
-      Event.publish('COLOR-SELECT-REQUEST', { content, btn })
     })
   })
 
-  if (!btn.dataset.color) btn.dataset.color = 'GREY'
-  Event.publish('COLOR-SELECT-REQUEST', { content, btn })
+  selection.innerHTML = content.querySelector(`li[data-color="${selection.dataset.color}"]`).innerHTML
+
   return container
 }
 
@@ -91,24 +96,12 @@ const getProjectAlert = function(modal) {
   
   if (!container.querySelector('.alert')) {
     container.insertAdjacentHTML('beforeend', `
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-          <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
-            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-          </symbol>
-        </svg>  
-        <div>This project already exists</div>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert"> 
+        <div><i class="bi bi-exclamation-triangle-fill"></i> This project already exists</div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     `)
   }
-}
-
-const loadColorSelect = function({ content, btn }) {
-  let color = btn.dataset.color
-  let template = content.querySelector(`li[data-color="${color}"]`)
-  
-  btn.innerHTML = template.innerHTML
 }
 
 const loadProjectForm = function(body) {
@@ -119,8 +112,8 @@ const loadProjectForm = function(body) {
   let form = content.querySelector('form')
 
   content.id = 'project.id'
-  form.addEventListener('submit', submitProjectForm)
 
+  form.addEventListener('submit', submitProjectForm)
   Event.publish('MODAL-REQUEST', container)
 }
 
@@ -133,16 +126,20 @@ const loadProjectEdit = function(project) {
 
   content.id = 'project-edit-form'
   form.dataset.id = project.id
-  form.querySelector('[name="project-name"]').value = project.name
-  form.querySelector('[name="project-color"]').value = project.color
 
-  let btn = form.querySelector('.color-select-btn')
+  let name = form.querySelector('[name="project-name"]')
+  let color = form.querySelector('[name="project-color"]')
 
-  btn.dataset.color = project.color
-  Event.publish('COLOR-SELECT-REQUEST', { content, btn })
+  name.value = project.name
+  color.value = project.color
+
+  let selection = form.querySelector('.color-select-btn')
+  selection.dataset.value = project.color
+
+  let template = form.querySelector(`li[data-color="${selection.dataset.color}"]`)
+  selection.innerHTML = template.innerHTML
 
   form.addEventListener('submit', submitProjectEdit)
-
   Event.publish('MODAL-REQUEST', container)
 }
 
@@ -150,17 +147,18 @@ const submitProjectForm = function(e) {
   e.preventDefault()
   
   let modal = e.target.closest('.modal')
-  let name = e.target.querySelector('[name="project-name"]').value
-  let color = e.target.querySelector('[name="project-color"]').value
-  let select = e.target.querySelector('.color-select-btn')
+  let name = e.target.querySelector('[name="project-name"]')
+  let color = e.target.querySelector('[name="project-color"]')
 
-  color = select.dataset.color
-
-  if (Project.has(name)) {
+  if (Project.has(name.value)) {
     getProjectAlert(modal)
   } else {
     bootstrap.Modal.getInstance(modal).hide()
-    Event.publish('PROJECT-SUBMIT', { name, color, tasks: [] })    
+    Event.publish('PROJECT-SUBMIT', { 
+      name: name.value, 
+      color: color.value, 
+      tasks: [] 
+    })    
   }
 }
 
@@ -225,8 +223,6 @@ const loadConfirmation = function(project) {
 }
 
 const getTaskForm = function() {
-  let projects = Project.storage()
-  let page = document.querySelector('.tasks-list')
   let form = document.createElement('div')
 
   form.classList.add('tasks-form-container')
@@ -234,13 +230,40 @@ const getTaskForm = function() {
     <form class="task-form">
       <input type="text" name="task-name">
       <input type="date" name="task-date">
-      <select name="task-priority" id="priority-options">
-        <option value="1">Low</option>
-        <option value="2">Mid</option>
-        <option value="3">High</option>
-        <option value="4">Urgent</option>
-      </select>
-      <select name="task-project" id="project-options"></select>
+      <input type="hidden" name="task-priority">
+      <input type="hidden" name="task-project">
+      <div class="dropdown task-priorities">
+        <button type="button" class="btn priority-select-btn" data-bs-toggle="dropdown" aria-expanded="false">
+        </button>
+        <ul class="dropdown-menu task-priority-list">
+          <li data-value="0">
+            <span class="priority-icon"><i class="bi bi-fire"></i></span>
+            <span class="priority-name">Set Priority</span>
+          </li>
+          <li data-value="1">
+            <span class="priority-icon"><i class="bi bi-fire"></i></span>
+            <span class="priority-name">Low</span>
+          </li>
+          <li data-value="2">
+            <span class="priority-icon"><i class="bi bi-fire"></i></span>
+            <span class="priority-name">Mid</span>
+          </li>
+          <li data-value="3">
+            <span class="priority-icon"><i class="bi bi-fire"></i></span>
+            <span class="priority-name">High</span>
+          </li>
+          <li data-value="4">
+            <span class="priority-icon"><i class="bi bi-fire"></i></span>
+            <span class="priority-name">Urgent</span>
+          </li>
+        </ul>
+      </div>
+      <div class="dropdown task-projects">
+        <button type="button" class="btn project-select-btn" data-bs-toggle="dropdown" aria-expanded="false">
+        </button>
+        <ul class="dropdown-menu task-project-list">
+        </ul>
+      </div>
       <button class="task-submit-btn" type="submit">Add Task</button>
       <button class="task-cancel-btn" type="button">Cancel</button>
     </form>
@@ -248,15 +271,67 @@ const getTaskForm = function() {
 
   let date = form.querySelector('[name="task-date"')
   date.defaultValue = format(new Date(), 'yyyy-MM-dd')
-  console.log(date.defaultValue)
 
-  projects.forEach(project => {
-    form.querySelector('[name="task-project"]').insertAdjacentHTML('beforeend', `
-      <option value="${project.name}">${project.name}</option>
+  let priorities = form.querySelectorAll('.task-priority-list li')
+  let priority = form.querySelector('.priority-select-btn')
+
+  if (!priority.dataset.value) priority.dataset.value = 0
+  form.querySelector('[name="task-priority"]').value = 0
+
+  priorities.forEach(item => {
+    let input = form.querySelector('[name="task-priority"]')
+
+    item.addEventListener('click', () => {
+      priority.dataset.value = item.dataset.value
+      priority.innerHTML = item.innerHTML
+
+      input.value = item.dataset.value
+    })
+  })
+
+  let template = form.querySelector(`li[data-value="${priority.dataset.value}"]`)
+  priority.innerHTML = template.innerHTML
+
+  let projects = Project.storage()
+  let project = form.querySelector('.project-select-btn')
+
+  projects.forEach(p => {
+    let list = form.querySelector('.task-project-list')
+
+    list.insertAdjacentHTML('beforeend', `
+      <li data-value="${p.name}" data-color="${p.color}">
+        <span class="project-color">
+          ${p.name == 'inbox' ? '<i class="bi bi-inbox"></i>'
+                              : ''}
+        </span>
+        <span class="project-name">${p.name}</span>
+      </li>
     `)
 
-    if (project.id == page.dataset.id) {
-      form.querySelector(`[value="${project.name}"]`).selected = true
+    let item = list.querySelector(`li[data-value="${p.name}"]`)
+    let input = form.querySelector('[name="task-project"]')
+
+    item.addEventListener('click', () => {
+      project.dataset.value = item.dataset.value
+      project.dataset.color = item.dataset.color
+      project.innerHTML = item.innerHTML
+
+      input.value = item.dataset.value
+    })
+
+    let page = document.querySelector('.tasks-list')
+    let template = form.querySelector(`li[data-value="${p.name}"]`)
+
+    if (p.id == page.dataset.id) {
+      project.dataset.value = p.name
+      project.innerHTML = template.innerHTML
+
+      input.value = p.name
+    } else {
+      project.dataset.value = 'inbox'
+      project.innerHTML = template.innerHTML
+
+      input.value = 'inbox'
     }
   })
 
@@ -276,8 +351,10 @@ const loadTaskForm = function(container) {
 const submitTaskForm = function(e) {
   e.preventDefault()
 
+  let page = document.querySelector('.tasks-list').dataset.id
+
   Event.publish('TASK-SUBMIT', { 
-    page: getPage(document.querySelector('.tasks-list').dataset.id), 
+    page: getPage(page), 
     task: { 
       name: e.target.querySelector('[name="task-name"]').value, 
       date: e.target.querySelector('[name="task-date"]').value, 
@@ -297,6 +374,17 @@ const loadTaskEdit = function({ page, task }) {
   item.querySelector('[name="task-date"]').value = task.date
   item.querySelector('[name="task-priority"').value = task.priority
   item.querySelector('[name="task-project"]').value = task.project
+
+  let priority = item.querySelector('.priority-select-btn')
+  priority.dataset.value = task.priority
+
+  let template = item.querySelector(`li[data-value="${priority.dataset.value}"]`)
+  priority.innerHTML = template.innerHTML
+
+  let project = item.querySelector('.project-select-btn')
+
+  project.dataset.value = task.project
+  Event.publish('PROJECT-SELECT-REQUEST', { form: item, btn: priority })
 
   let submit = item.querySelector('.task-submit-btn')
   let cancel = item.querySelector('.task-cancel-btn')
@@ -335,7 +423,6 @@ export const closeTaskForm = function(e) {
 
 const Form = function() {
   Event.subscribe('PROJECT-FORM-REQUEST', loadProjectForm)
-  Event.subscribe('COLOR-SELECT-REQUEST', loadColorSelect)
   Event.subscribe('PROJECT-EDIT-REQUEST', loadProjectEdit)
   Event.subscribe('PROJECT-CONFIRM-REQUEST', loadConfirmation)
   Event.subscribe('TASK-FORM-REQUEST', loadTaskForm)
