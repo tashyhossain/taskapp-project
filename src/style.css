@@ -56,7 +56,7 @@ ul.task-priority-list li:hover {
   background: #EFEFEF;
 }
 
-[data-color="null"] .project-color {
+[data-value="inbox"] .project-color {
   display: flex;
   justify-content: center;
   align-items: center;

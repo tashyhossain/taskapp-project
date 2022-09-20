@@ -69,24 +69,25 @@ const getProjectForm = function() {
     </div>
   `)
 
-  let input = container.querySelector('[name="project-color"]')
-  let selection = container.querySelector('.color-select-btn')
+  let colorInput = container.querySelector('[name="project-color"]')
+  let colorSelect = container.querySelector('.color-select-btn')
 
-  if (!selection.dataset.color) selection.dataset.color = 'GREY'
-  input.value = selection.dataset.color
+  if (!colorSelect.dataset.color) colorSelect.dataset.color = 'GREY'
+  colorInput.value = colorSelect.dataset.color
 
   let content = container.querySelector('.project-colors-list')
 
   content.querySelectorAll('li').forEach(item => {
     item.addEventListener('click', () => {
-      selection.dataset.color = item.dataset.color
-      selection.innerHTML = item.innerHTML
+      colorSelect.dataset.color = item.dataset.color
+      colorSelect.innerHTML = item.innerHTML
 
-      input.value = item.dataset.color
+      colorInput.value = item.dataset.color
     })
   })
 
-  selection.innerHTML = content.querySelector(`li[data-color="${selection.dataset.color}"]`).innerHTML
+  let colorClone = content.querySelector(`li[data-color="${colorSelect.dataset.color}"]`)
+  colorSelect.innerHTML = colorClone.innerHTML
 
   return container
 }
@@ -133,11 +134,11 @@ const loadProjectEdit = function(project) {
   name.value = project.name
   color.value = project.color
 
-  let selection = form.querySelector('.color-select-btn')
-  selection.dataset.value = project.color
+  let colorSelect = form.querySelector('.color-select-btn')
+  colorSelect.dataset.value = project.color
 
-  let template = form.querySelector(`li[data-color="${selection.dataset.color}"]`)
-  selection.innerHTML = template.innerHTML
+  let colorClone = form.querySelector(`li[data-color="${colorSelect.dataset.color}"]`)
+  colorSelect.innerHTML = colorClone.innerHTML
 
   form.addEventListener('submit', submitProjectEdit)
   Event.publish('MODAL-REQUEST', container)
@@ -223,6 +224,7 @@ const loadConfirmation = function(project) {
 }
 
 const getTaskForm = function() {
+  let page = document.querySelector('.tasks-list')
   let form = document.createElement('div')
 
   form.classList.add('tasks-form-container')
@@ -273,66 +275,61 @@ const getTaskForm = function() {
   date.defaultValue = format(new Date(), 'yyyy-MM-dd')
 
   let priorities = form.querySelectorAll('.task-priority-list li')
-  let priority = form.querySelector('.priority-select-btn')
+  let prioritySelect = form.querySelector('.priority-select-btn')
+  let priorityInput = form.querySelector('[name="task-priority"]')
 
-  if (!priority.dataset.value) priority.dataset.value = 0
+  if (!prioritySelect.dataset.value) prioritySelect.dataset.value = 0
   form.querySelector('[name="task-priority"]').value = 0
 
   priorities.forEach(item => {
-    let input = form.querySelector('[name="task-priority"]')
-
     item.addEventListener('click', () => {
-      priority.dataset.value = item.dataset.value
-      priority.innerHTML = item.innerHTML
+      prioritySelect.dataset.value = item.dataset.value
+      prioritySelect.innerHTML = item.innerHTML
 
-      input.value = item.dataset.value
+      priorityInput.value = item.dataset.value
     })
   })
 
-  let template = form.querySelector(`li[data-value="${priority.dataset.value}"]`)
-  priority.innerHTML = template.innerHTML
+  let priorityClone = form.querySelector(`li[data-value="${prioritySelect.dataset.value}"]`)
+  prioritySelect.innerHTML = priorityClone.innerHTML
 
-  let projects = Project.storage()
-  let project = form.querySelector('.project-select-btn')
+  let projects = form.querySelector('.task-project-list')
+  let projectSelect = form.querySelector('.project-select-btn')
+  let projectInput = form.querySelector('[name="task-project"]')
 
-  projects.forEach(p => {
-    let list = form.querySelector('.task-project-list')
-
-    list.insertAdjacentHTML('beforeend', `
-      <li data-value="${p.name}" data-color="${p.color}">
+  Project.storage().forEach(project => {
+    projects.insertAdjacentHTML('beforeend', `
+      <li data-value="${project.name}" data-color="${project.color}">
         <span class="project-color">
-          ${p.name == 'inbox' ? '<i class="bi bi-inbox"></i>'
+          ${project.name == 'inbox' ? '<i class="bi bi-inbox"></i>'
                               : ''}
         </span>
-        <span class="project-name">${p.name}</span>
+        <span class="project-name">${project.name}</span>
       </li>
     `)
 
-    let item = list.querySelector(`li[data-value="${p.name}"]`)
-    let input = form.querySelector('[name="task-project"]')
+    let item = projects.querySelector(`li[data-value="${project.name}"]`)
 
     item.addEventListener('click', () => {
-      project.dataset.value = item.dataset.value
-      project.dataset.color = item.dataset.color
-      project.innerHTML = item.innerHTML
+      projectSelect.dataset.value = item.dataset.value
+      projectSelect.dataset.color = item.dataset.color
+      projectSelect.innerHTML = item.innerHTML
 
-      input.value = item.dataset.value
+      projectInput.value = item.dataset.value
     })
 
-    let page = document.querySelector('.tasks-list')
-    let template = form.querySelector(`li[data-value="${p.name}"]`)
-
-    if (p.id == page.dataset.id) {
-      project.dataset.value = p.name
-      project.innerHTML = template.innerHTML
-
-      input.value = p.name
+    if (project.id == page.dataset.id) {
+      projectSelect.dataset.value = project.name
+      projectInput.value = project.name
     } else {
-      project.dataset.value = 'inbox'
-      project.innerHTML = template.innerHTML
-
-      input.value = 'inbox'
+      projectSelect.dataset.value = 'inbox'
+      projectInput.value = 'inbox'
     }
+
+    let projectClone = form.querySelector(`li[data-value="${projectSelect.dataset.value}"]`)
+    projectSelect.dataset.color = projectClone.dataset.color
+    projectSelect.innerHTML = projectClone.innerHTML
+    
   })
 
   return form
@@ -384,7 +381,7 @@ const loadTaskEdit = function({ page, task }) {
   let project = item.querySelector('.project-select-btn')
 
   project.dataset.value = task.project
-  Event.publish('PROJECT-SELECT-REQUEST', { form: item, btn: priority })
+  project.innerHTML = item.querySelector(`li[data-value="${project.dataset.value}"]`).innerHTML
 
   let submit = item.querySelector('.task-submit-btn')
   let cancel = item.querySelector('.task-cancel-btn')
