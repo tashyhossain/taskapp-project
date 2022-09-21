@@ -18,44 +18,43 @@ const getProjectForm = function() {
           </div>
           <div class="modal-body">
             <label for="project-name-input">Name:</label>
-            <input type="text" name="project-name" id="project-name-input">
+            <input type="text" name="project-name" id="project-name-input" required>
             <label for="project-color-input">Color:</label>
             <input type="hidden" name="project-color" id="project-color-input">
             <div class="dropdown project-colors">
-              <button type="button" class="dropdown-toggle color-select-btn" data-bs-toggle="dropdown" aria-expanded="false">
-              </button>
-              <ul class="dropdown-menu project-colors-list">
-                <li data-color="GREY">
-                  <span class="color-sample"></span>
-                  <span class="color-name">Grey</span>
+              <button type="button" class="selection-display color-select-btn" data-bs-toggle="dropdown" aria-expanded="false"></button>
+              <ul class="dropdown-menu selection-list project-colors-list">
+                <li class="selection-item" data-color="GREY">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Grey</span>
                 </li>
-                <li data-color="BLUE">
-                  <span class="color-sample"></span>
-                  <span class="color-name">Blue</span>
+                <li class="selection-item" data-color="BLUE">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Blue</span>
                 </li>
-                <li data-color="PURPLE">
-                  <span class="color-sample"></span>
-                  <span class="color-name">Purple</span>  
+                <li class="selection-item" data-color="PURPLE">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Purple</span>  
                 </li>
-                <li data-color="PINK">
-                  <span class="color-sample"></span>
-                  <span class="color-name">Pink</span> 
+                <li class="selection-item" data-color="PINK">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Pink</span> 
                 </li>
-                <li data-color="RED">
-                  <span class="color-sample"></span>
-                  <span class="color-name">Red</span> 
+                <li class="selection-item" data-color="RED">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Red</span> 
                 </li>
-                <li data-color="ORANGE">
-                  <span class="color-sample"></span>
-                  <span class="color-name">Orange</span> 
+                <li class="selection-item" data-color="ORANGE">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Orange</span> 
                 </li>
-                <li data-color="YELLOW">
-                  <span class="color-sample"></span>
-                  <span class="color-name">Yellow</span> 
+                <li class="selection-item" data-color="YELLOW">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Yellow</span> 
                 </li>
-                <li data-color="GREEN">
-                  <span class="color-sample"></span>
-                  <span class="color-name">Green</span> 
+                <li class="selection-item" data-color="GREEN">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Green</span> 
                 </li>
               </ul>
             </div>
@@ -224,113 +223,94 @@ const loadConfirmation = function(project) {
 }
 
 const getTaskForm = function() {
-  let page = document.querySelector('.tasks-list')
   let form = document.createElement('div')
 
   form.classList.add('tasks-form-container')
   form.insertAdjacentHTML('afterbegin', `
     <form class="task-form">
-      <input type="text" name="task-name">
+      <input type="text" name="task-name" required>
       <input type="date" name="task-date">
       <input type="hidden" name="task-priority">
       <input type="hidden" name="task-project">
       <div class="dropdown task-priorities">
-        <button type="button" class="btn priority-select-btn" data-bs-toggle="dropdown" aria-expanded="false">
-        </button>
-        <ul class="dropdown-menu task-priority-list">
-          <li data-value="0">
-            <span class="priority-icon"><i class="bi bi-fire"></i></span>
-            <span class="priority-name">Set Priority</span>
+        <button type="button" class="btn selection-display priority-select-btn" data-bs-toggle="dropdown" aria-expanded="false"></button>
+        <ul class="dropdown-menu selection-list task-priority-list">
+          <li class="selection-item" data-value="0">
+            <span class="selection-icon"><i class="bi bi-fire"></i></span>
+            <span class="selection-name">Set Priority</span>
           </li>
-          <li data-value="1">
-            <span class="priority-icon"><i class="bi bi-fire"></i></span>
-            <span class="priority-name">Low</span>
+          <li class="selection-item" data-value="1">
+            <span class="selection-icon"><i class="bi bi-fire"></i></span>
+            <span class="selection-name">Low</span>
           </li>
-          <li data-value="2">
-            <span class="priority-icon"><i class="bi bi-fire"></i></span>
-            <span class="priority-name">Mid</span>
+          <li class="selection-item" data-value="2">
+            <span class="selection-icon"><i class="bi bi-fire"></i></span>
+            <span class="selection-name">Mid</span>
           </li>
-          <li data-value="3">
-            <span class="priority-icon"><i class="bi bi-fire"></i></span>
-            <span class="priority-name">High</span>
+          <li class="selection-item" data-value="3">
+            <span class="selection-icon"><i class="bi bi-fire"></i></span>
+            <span class="selection-name">High</span>
           </li>
-          <li data-value="4">
-            <span class="priority-icon"><i class="bi bi-fire"></i></span>
-            <span class="priority-name">Urgent</span>
+          <li class="selection-item" data-value="4">
+            <span class="selection-icon"><i class="bi bi-fire"></i></span>
+            <span class="selection-name">Urgent</span>
           </li>
         </ul>
       </div>
       <div class="dropdown task-projects">
-        <button type="button" class="btn project-select-btn" data-bs-toggle="dropdown" aria-expanded="false">
-        </button>
-        <ul class="dropdown-menu task-project-list">
-        </ul>
+        <button type="button" class="btn selection-display project-select-btn" data-bs-toggle="dropdown" aria-expanded="false"></button>
+        <ul class="dropdown-menu selection-list task-project-list"></ul>
       </div>
       <button class="task-submit-btn" type="submit">Add Task</button>
       <button class="task-cancel-btn" type="button">Cancel</button>
     </form>
   `)
 
-  let date = form.querySelector('[name="task-date"')
+  let date = form.querySelector('[name="task-date"]')
   date.defaultValue = format(new Date(), 'yyyy-MM-dd')
 
-  let priorities = form.querySelectorAll('.task-priority-list li')
-  let prioritySelect = form.querySelector('.priority-select-btn')
-  let priorityInput = form.querySelector('[name="task-priority"]')
-
-  if (!prioritySelect.dataset.value) prioritySelect.dataset.value = 0
-  form.querySelector('[name="task-priority"]').value = 0
-
-  priorities.forEach(item => {
-    item.addEventListener('click', () => {
-      prioritySelect.dataset.value = item.dataset.value
-      prioritySelect.innerHTML = item.innerHTML
-
-      priorityInput.value = item.dataset.value
-    })
-  })
-
-  let priorityClone = form.querySelector(`li[data-value="${prioritySelect.dataset.value}"]`)
-  prioritySelect.innerHTML = priorityClone.innerHTML
-
-  let projects = form.querySelector('.task-project-list')
-  let projectSelect = form.querySelector('.project-select-btn')
-  let projectInput = form.querySelector('[name="task-project"]')
-
   Project.storage().forEach(project => {
-    projects.insertAdjacentHTML('beforeend', `
-      <li data-value="${project.name}" data-color="${project.color}">
-        <span class="project-color">
-          ${project.name == 'inbox' ? '<i class="bi bi-inbox"></i>'
-                              : ''}
-        </span>
-        <span class="project-name">${project.name}</span>
+    let list = form.querySelector('.task-project-list')
+
+    list.insertAdjacentHTML('beforeend', `
+      <li class="selection-item" data-value="${project.name}" data-color="${project.color}" data-id="${project.id}">
+        ${project.name == 'inbox' ? '<span class="selection-icon"><i class="bi bi-inbox"></i></span'
+                                  : '<span class="selection-color"></span>'}
+        <span class="selection-name">${project.name}</span>
       </li>
     `)
+  })
 
-    let item = projects.querySelector(`li[data-value="${project.name}"]`)
+  let projects = form.querySelectorAll('.task-project-list li')
+  projects.forEach(project => {
+    let select = form.querySelector('.project-select-btn')
+    let input = form.querySelector('[name="task-project"]')
+
+    project.addEventListener('click', () => {
+      input.value = project.dataset.value
+      select.dataset.value = project.dataset.value
+      select.dataset.color = project.dataset.color
+
+      select.innerHTML = project.innerHTML
+    })
+  })
+
+  let priorities = form.querySelectorAll('.task-priority-list li')
+  let priority = form.querySelector('.priority-select-btn')
+
+  priorities.forEach(item => {
+    let input = form.querySelector('[name="task-priority"]')
 
     item.addEventListener('click', () => {
-      projectSelect.dataset.value = item.dataset.value
-      projectSelect.dataset.color = item.dataset.color
-      projectSelect.innerHTML = item.innerHTML
-
-      projectInput.value = item.dataset.value
+      input.value = item.dataset.value
+      priority.dataset.value = item.dataset.value
+      
+      priority.innerHTML = item.innerHTML
     })
-
-    if (project.id == page.dataset.id) {
-      projectSelect.dataset.value = project.name
-      projectInput.value = project.name
-    } else {
-      projectSelect.dataset.value = 'inbox'
-      projectInput.value = 'inbox'
-    }
-
-    let projectClone = form.querySelector(`li[data-value="${projectSelect.dataset.value}"]`)
-    projectSelect.dataset.color = projectClone.dataset.color
-    projectSelect.innerHTML = projectClone.innerHTML
-    
   })
+
+  if (!priority.dataset.value) priority.dataset.value = 0
+  priority.innerHTML = form.querySelector(`li[data-value="0"]`).innerHTML
 
   return form
 }
@@ -339,7 +319,26 @@ const loadTaskForm = function(container) {
   container.insertAdjacentElement('afterbegin', getTaskForm())
 
   let form = container.querySelector('form')
-  let cancel = container.querySelector('.task-cancel-btn')
+  let cancel = form.querySelector('.task-cancel-btn')
+
+  let page = document.querySelector('.tasks-list').dataset.id
+  let projectInput = form.querySelector('[name="task-project"]')
+  let priorityInput = form.querySelector('[name="task-priority"]')
+  let projects = [...form.querySelectorAll('.task-project-list li')]
+  let project = form.querySelector('.project-select-btn')
+  let template = projects.find(p => p.dataset.id == page)
+
+  if (!template) {
+    template = projects.find(p => p.dataset.id == 'inbox')
+  }
+
+  project.dataset.value = template.dataset.value
+  project.dataset.color = template.dataset.color
+  project.dataset.id = template.dataset.id
+  project.innerHTML = template.innerHTML
+
+  projectInput.value = template.dataset.value
+  priorityInput.value = 0
 
   form.addEventListener('submit', submitTaskForm)
   cancel.addEventListener('click', closeTaskForm)
@@ -369,19 +368,21 @@ const loadTaskEdit = function({ page, task }) {
   item.insertAdjacentElement('beforeend', getTaskForm())
   item.querySelector('[name="task-name"]').value = task.name
   item.querySelector('[name="task-date"]').value = task.date
-  item.querySelector('[name="task-priority"').value = task.priority
+  item.querySelector('[name="task-priority"]').value = task.priority
   item.querySelector('[name="task-project"]').value = task.project
 
   let priority = item.querySelector('.priority-select-btn')
-  priority.dataset.value = task.priority
+  let priorityTemplate = item.querySelector(`li[data-value="${task.priority}"]`)
 
-  let template = item.querySelector(`li[data-value="${priority.dataset.value}"]`)
-  priority.innerHTML = template.innerHTML
+  priority.dataset.value = task.priority
+  priority.innerHTML = priorityTemplate.innerHTML
 
   let project = item.querySelector('.project-select-btn')
+  let projectTemplate = item.querySelector(`li[data-value="${task.project}"]`)
 
   project.dataset.value = task.project
-  project.innerHTML = item.querySelector(`li[data-value="${project.dataset.value}"]`).innerHTML
+  project.dataset.color = projectTemplate.dataset.color
+  project.innerHTML = projectTemplate.innerHTML
 
   let submit = item.querySelector('.task-submit-btn')
   let cancel = item.querySelector('.task-cancel-btn')
@@ -402,7 +403,7 @@ const submitTaskEdit = function(e) {
     task: {
       name: e.target.querySelector('[name="task-name"]').value,
       date: e.target.querySelector('[name="task-date"]').value,
-      priority: e.target.querySelector('[name="task-priority"').value,
+      priority: e.target.querySelector('[name="task-priority"]').value,
       project: e.target.querySelector('[name="task-project"]').value,
       status: false,
       id: task.dataset.id
