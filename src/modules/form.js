@@ -1,5 +1,6 @@
 import Event from './event'
 import Project from './project'
+import Task from './task'
 import * as bootstrap from 'bootstrap'
 import { getPage, loadTaskBtn } from './page'
 import { v4 as uuidv4 } from 'uuid'
@@ -371,6 +372,7 @@ const submitTaskForm = function(form) {
 }
 
 const loadTaskEdit = function({ page, task }) {
+  console.log({ page, task })
   let item = page.querySelector(`[data-id="${task.id}"]`)
   let current = item.querySelector('.task-content')
 
@@ -405,9 +407,9 @@ const loadTaskEdit = function({ page, task }) {
   })
 
   cancel.addEventListener('click', () => {
-    Event.publish('CLOSE-EDIT-REQUEST', { 
-      form: submit.closest('form'), 
-      task: current
+    Event.publish('CLOSE-EDIT-REQUEST', {
+      form: submit.closest('form'),
+      content: current
     })
   })
 }
@@ -429,18 +431,22 @@ const submitTaskEdit = function(form) {
   })
 }
 
-export const closeTaskForm = function(form) {
+const closeTaskForm = function(form) {
   let container = document.querySelector('.tasks-list')
 
   container.removeChild(form.parentNode)
   Event.publish('TASK-BTN-REQUEST', container)
 }
 
-export const closeTaskEdit = function({ form, task }) {
-  let container = form.parentNode
+const closeTaskEdit = function({ form, content }) {
+  let page = document.querySelector('.tasks-list')
+  let container = form.closest('.task-item')
+  let task = Task.storage().find(t => t.id == content.dataset.id)
 
-  container.removeChild(form)
-  container.appendChild(task)
+  container.removeChild(form.parentNode)
+  container.appendChild(content)
+
+  Event.publish('TASK-TOOLS-REQUEST', { item: content, page, task })
 }
 
 const Form = function() {

@@ -145,17 +145,30 @@ const loadTasks = function({ page, tasks }) {
       })
     })
 
-    item.querySelector('.task-edit-btn').addEventListener('click', (e) => {
-      e.preventDefault()
-      Event.publish('TASK-EDIT-REQUEST', { page, task })
-    })
+    // item.querySelector('.task-edit-btn').addEventListener('click', (e) => {
+    //   e.preventDefault()
+    //   Event.publish('TASK-EDIT-REQUEST', { page, task })
+    // })
 
-    item.querySelector('.task-delete-btn').addEventListener('click', (e) => {
-      Event.publish('TASK-DELETE-REQUEST', task)
-    })
+    // item.querySelector('.task-delete-btn').addEventListener('click', (e) => {
+    //   Event.publish('TASK-DELETE-REQUEST', task)
+    // })
+
+    Event.publish('TASK-TOOLS-REQUEST', { item, page, task })
   })
 
   Event.publish('TASK-BTN-REQUEST', page)
+}
+
+export const loadTaskTools = function({ item, page, task }) {
+  item.querySelector('.task-edit-btn').addEventListener('click', (e) => {
+    e.preventDefault()
+    Event.publish('TASK-EDIT-REQUEST', { page, task })
+  })
+
+  item.querySelector('.task-delete-btn').addEventListener('click', (e) => {
+    Event.publish('TASK-DELETE-REQUEST', task)
+  })
 }
 
 export const loadTaskBtn = function(page) {
@@ -178,6 +191,7 @@ const Page = function() {
   Event.subscribe('TASK-BTN-REQUEST', loadTaskBtn)
   Event.subscribe('TASKS-REQUEST', getTasks)
   Event.subscribe('RENDER-REQUEST', loadTasks)
+  Event.subscribe('TASK-TOOLS-REQUEST', loadTaskTools)
 }
 
 export default Page()
