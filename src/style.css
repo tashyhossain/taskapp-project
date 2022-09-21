@@ -103,9 +103,3 @@ li[data-value="0"] {
 [data-value="4"] span.selection-icon {
   color: #7316EE;
 }
-
-/* ul.task-project-list li .project-color {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-} */

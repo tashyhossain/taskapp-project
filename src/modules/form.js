@@ -1,7 +1,7 @@
 import Event from './event'
 import Project from './project'
 import * as bootstrap from 'bootstrap'
-import { getPage } from './page'
+import { getPage, loadTaskBtn } from './page'
 import { v4 as uuidv4 } from 'uuid'
 import { format } from 'date-fns'
 
@@ -113,7 +113,11 @@ const loadProjectForm = function(body) {
 
   content.id = 'project.id'
 
-  form.addEventListener('submit', submitProjectForm)
+  form.addEventListener('submit', event => {
+    event.preventDefault()
+    Event.publish('PROJECT-FORM-SUBMIT-REQUEST', event.target)
+  })
+
   Event.publish('MODAL-REQUEST', container)
 }
 
@@ -134,21 +138,23 @@ const loadProjectEdit = function(project) {
   color.value = project.color
 
   let colorSelect = form.querySelector('.color-select-btn')
-  colorSelect.dataset.value = project.color
+  colorSelect.dataset.color = project.color
 
   let colorClone = form.querySelector(`li[data-color="${colorSelect.dataset.color}"]`)
   colorSelect.innerHTML = colorClone.innerHTML
 
-  form.addEventListener('submit', submitProjectEdit)
+  form.addEventListener('submit', event => {
+    event.preventDefault()
+    Event.publish('PROJECT-EDIT-SUBMIT-REQUEST', event.target)
+  })
+
   Event.publish('MODAL-REQUEST', container)
 }
 
-const submitProjectForm = function(e) {
-  e.preventDefault()
-  
-  let modal = e.target.closest('.modal')
-  let name = e.target.querySelector('[name="project-name"]')
-  let color = e.target.querySelector('[name="project-color"]')
+const submitProjectForm = function(form) {
+  let modal = form.closest('.modal')
+  let name = form.querySelector('[name="project-name"]')
+  let color = form.querySelector('[name="project-color"]')
 
   if (Project.has(name.value)) {
     getProjectAlert(modal)
@@ -162,17 +168,15 @@ const submitProjectForm = function(e) {
   }
 }
 
-const submitProjectEdit = function(e) {
-  e.preventDefault()
+const submitProjectEdit = function(form) {
+  let modal = form.closest('.modal')
 
-  let modal = e.target.closest('.modal')
   bootstrap.Modal.getInstance(modal).hide()
 
-  console.log(e.target.querySelector('[name="project-color"]').value)
   Event.publish('PROJECT-EDIT-SUBMIT', {
-    id: e.target.closest('form').dataset.id,
-    name: e.target.querySelector('[name="project-name"]').value,
-    color: e.target.querySelector('[name="project-color"]').value
+    id: form.dataset.id,
+    name: form.querySelector('[name="project-name"]').value,
+    color: form.querySelector('[name="project-color"]').value
   })
 }
 
@@ -340,31 +344,37 @@ const loadTaskForm = function(container) {
   projectInput.value = template.dataset.value
   priorityInput.value = 0
 
-  form.addEventListener('submit', submitTaskForm)
-  cancel.addEventListener('click', closeTaskForm)
+  form.addEventListener('submit', event => {
+    event.preventDefault()
+    Event.publish('TASK-FORM-SUBMIT-REQUEST', event.target)
+  })
+
+  cancel.addEventListener('click', () => {
+    Event.publish('CLOSE-FORM-REQUEST', form)
+  })
 }
 
-const submitTaskForm = function(e) {
-  e.preventDefault()
-
+const submitTaskForm = function(form) {
   let page = document.querySelector('.tasks-list').dataset.id
 
   Event.publish('TASK-SUBMIT', { 
     page: getPage(page), 
     task: { 
-      name: e.target.querySelector('[name="task-name"]').value, 
-      date: e.target.querySelector('[name="task-date"]').value, 
-      priority: e.target.querySelector('[name="task-priority"]').value,
-      project: e.target.querySelector('[name="task-project"]').value, 
+      name: form.querySelector('[name="task-name"]').value, 
+      date: form.querySelector('[name="task-date"]').value, 
+      priority: form.querySelector('[name="task-priority"]').value,
+      project: form.querySelector('[name="task-project"]').value, 
       status: false, 
-      id: uuidv4() }
+      id: uuidv4() 
+    }
   })
 }
 
 const loadTaskEdit = function({ page, task }) {
   let item = page.querySelector(`[data-id="${task.id}"]`)
+  let current = item.querySelector('.task-content')
 
-  item.removeChild(item.querySelector('.task-content'))
+  item.removeChild(current)
   item.insertAdjacentElement('beforeend', getTaskForm())
   item.querySelector('[name="task-name"]').value = task.name
   item.querySelector('[name="task-date"]').value = task.date
@@ -388,43 +398,63 @@ const loadTaskEdit = function({ page, task }) {
   let cancel = item.querySelector('.task-cancel-btn')
 
   submit.textContent = 'Edit Task'
-  submit.closest('form').addEventListener('submit', submitTaskEdit)
-  cancel.addEventListener('click', closeTaskForm)
+
+  submit.closest('form').addEventListener('submit', event => {
+    event.preventDefault()
+    Event.publish('TASK-EDIT-SUBMIT-REQUEST', event.target)
+  })
+
+  cancel.addEventListener('click', () => {
+    Event.publish('CLOSE-EDIT-REQUEST', { 
+      form: submit.closest('form'), 
+      task: current
+    })
+  })
 }
 
-const submitTaskEdit = function(e) {
-  e.preventDefault()
-
-  let current = document.querySelector('.tasks-list').dataset.id
-  let task = e.target.closest('.task-item')
+const submitTaskEdit = function(form) {
+  let page = document.querySelector('.tasks-list').dataset.id
+  let task = form.closest('.task-item')
 
   Event.publish('TASK-EDIT-SUBMIT', {
-    page: getPage(current), 
+    page: getPage(page), 
     task: {
-      name: e.target.querySelector('[name="task-name"]').value,
-      date: e.target.querySelector('[name="task-date"]').value,
-      priority: e.target.querySelector('[name="task-priority"]').value,
-      project: e.target.querySelector('[name="task-project"]').value,
+      name: form.querySelector('[name="task-name"]').value,
+      date: form.querySelector('[name="task-date"]').value,
+      priority: form.querySelector('[name="task-priority"]').value,
+      project: form.querySelector('[name="task-project"]').value,
       status: false,
       id: task.dataset.id
     }
   })
 }
 
-export const closeTaskForm = function(e) {
-  let content = document.querySelector('.tasks-list')
-  let form = e.target.closest('form')
+export const closeTaskForm = function(form) {
+  let container = document.querySelector('.tasks-list')
 
-  form.parentNode.removeChild(form)
-  Event.publish('TASKS-REQUEST', content)
+  container.removeChild(form.parentNode)
+  Event.publish('TASK-BTN-REQUEST', container)
+}
+
+export const closeTaskEdit = function({ form, task }) {
+  let container = form.parentNode
+
+  container.removeChild(form)
+  container.appendChild(task)
 }
 
 const Form = function() {
   Event.subscribe('PROJECT-FORM-REQUEST', loadProjectForm)
   Event.subscribe('PROJECT-EDIT-REQUEST', loadProjectEdit)
+  Event.subscribe('PROJECT-FORM-SUBMIT-REQUEST', submitProjectForm)
+  Event.subscribe('PROJECT-EDIT-SUBMIT-REQUEST', submitProjectEdit)
   Event.subscribe('PROJECT-CONFIRM-REQUEST', loadConfirmation)
   Event.subscribe('TASK-FORM-REQUEST', loadTaskForm)
   Event.subscribe('TASK-EDIT-REQUEST', loadTaskEdit)
+  Event.subscribe('TASK-FORM-SUBMIT-REQUEST', submitTaskForm)
+  Event.subscribe('TASK-EDIT-SUBMIT-REQUEST', submitTaskEdit)
+  Event.subscribe('CLOSE-FORM-REQUEST', closeTaskForm)
+  Event.subscribe('CLOSE-EDIT-REQUEST', closeTaskEdit)
 }
 
 export default Form()

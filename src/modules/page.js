@@ -155,6 +155,10 @@ const loadTasks = function({ page, tasks }) {
     })
   })
 
+  Event.publish('TASK-BTN-REQUEST', page)
+}
+
+export const loadTaskBtn = function(page) {
   page.insertAdjacentHTML('afterbegin', `
     <button class="show-task-form-btn" type="button">Add Task</button>
   `)
@@ -171,6 +175,7 @@ const Page = function() {
   Event.subscribe('PAGE-REQUEST', loadPage)
   Event.subscribe('PROJECTS-REQUEST', loadProjects)
   Event.subscribe('MODAL-REQUEST', loadModal)
+  Event.subscribe('TASK-BTN-REQUEST', loadTaskBtn)
   Event.subscribe('TASKS-REQUEST', getTasks)
   Event.subscribe('RENDER-REQUEST', loadTasks)
 }
