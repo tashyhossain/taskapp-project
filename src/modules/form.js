@@ -13,7 +13,7 @@ const getProjectForm = function() {
   container.insertAdjacentHTML('afterbegin', `
     <div class="modal fade" tabindex="-1">
       <div class="modal-dialog modal-sm">
-        <form class="project-form modal-content">
+        <form class="modal-content project-form" id="project-form">
           <div class="modal-header">
             <h5 class="modal-title">Add Project</h5>
           </div>
@@ -22,9 +22,9 @@ const getProjectForm = function() {
             <input type="text" name="project-name" id="project-name-input" required>
             <label for="project-color-input">Color:</label>
             <input type="hidden" name="project-color" id="project-color-input">
-            <div class="dropdown project-colors">
-              <button type="button" class="selection-display color-select-btn" data-bs-toggle="dropdown" aria-expanded="false"></button>
-              <ul class="dropdown-menu selection-list project-colors-list">
+            <div class="dropdown" id="project-colors">
+              <button type="button" class="selection-display" id="color-select-btn" data-bs-toggle="dropdown" aria-expanded="false"></button>
+              <ul class="dropdown-menu selection-list" id="project-colors-list">
                 <li class="selection-item" data-color="GREY">
                   <span class="selection-color"></span>
                   <span class="selection-name">Grey</span>
@@ -61,8 +61,8 @@ const getProjectForm = function() {
             </div>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-primary project-submit-btn" type="submit">Add Project</button>
-            <button class="btn btn-secondary project-cancel-btn" type="button" data-bs-dismiss="modal">Cancel</button>
+            <button class="btn btn-primary" id="project-submit-btn" type="submit">Add Project</button>
+            <button class="btn btn-secondary" id="project-cancel-btn" type="button" data-bs-dismiss="modal">Cancel</button>
           </div>
         </form>
       </div>
@@ -70,12 +70,12 @@ const getProjectForm = function() {
   `)
 
   let colorInput = container.querySelector('[name="project-color"]')
-  let colorSelect = container.querySelector('.color-select-btn')
+  let colorSelect = container.querySelector('#color-select-btn')
 
   if (!colorSelect.dataset.color) colorSelect.dataset.color = 'GREY'
   colorInput.value = colorSelect.dataset.color
 
-  let content = container.querySelector('.project-colors-list')
+  let content = container.querySelector('#project-colors-list')
 
   content.querySelectorAll('li').forEach(item => {
     item.addEventListener('click', () => {
@@ -112,8 +112,6 @@ const loadProjectForm = function(body) {
   let content = container.querySelector('.modal')
   let form = content.querySelector('form')
 
-  content.id = 'project.id'
-
   form.addEventListener('submit', event => {
     event.preventDefault()
     Event.publish('PROJECT-FORM-SUBMIT-REQUEST', event.target)
@@ -129,7 +127,6 @@ const loadProjectEdit = function(project) {
   let content = container.querySelector('.modal')
   let form = content.querySelector('form')
 
-  content.id = 'project-edit-form'
   form.dataset.id = project.id
 
   let name = form.querySelector('[name="project-name"]')
@@ -138,7 +135,7 @@ const loadProjectEdit = function(project) {
   name.value = project.name
   color.value = project.color
 
-  let colorSelect = form.querySelector('.color-select-btn')
+  let colorSelect = form.querySelector('#color-select-btn')
   colorSelect.dataset.color = project.color
 
   let colorClone = form.querySelector(`li[data-color="${colorSelect.dataset.color}"]`)
@@ -186,7 +183,7 @@ const getConfirmForm = function() {
 
   container.classList.add('confirmation-container')
   container.insertAdjacentHTML('afterbegin', `
-    <div class="modal fade" tabindex="-1" id="confirmation-form">
+    <div class="modal fade" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
@@ -211,7 +208,7 @@ const loadConfirmation = function(project) {
   document.body.insertAdjacentElement('beforeend', getConfirmForm())
 
   let container = document.querySelector('.confirmation-container')
-  let content = container.querySelector('#confirmation-form')
+  let content = container.querySelector('.modal')
   let tasks = project.tasks.filter(t => t.status == false).length
   
   content.querySelector('.modal-body').innerHTML = `
@@ -232,14 +229,14 @@ const getTaskForm = function() {
 
   form.classList.add('tasks-form-container')
   form.insertAdjacentHTML('afterbegin', `
-    <form class="task-form">
+    <form id="task-form">
       <input type="text" name="task-name" required>
       <input type="date" name="task-date">
       <input type="hidden" name="task-priority">
       <input type="hidden" name="task-project">
       <div class="dropdown task-priorities">
-        <button type="button" class="btn selection-display priority-select-btn" data-bs-toggle="dropdown" aria-expanded="false"></button>
-        <ul class="dropdown-menu selection-list task-priority-list">
+        <button type="button" class="btn selection-display" id="priority-select-btn" data-bs-toggle="dropdown" aria-expanded="false"></button>
+        <ul class="dropdown-menu selection-list" id="task-priority-list">
           <li class="selection-item" data-value="0">
             <span class="selection-icon"><i class="bi bi-fire"></i></span>
             <span class="selection-name">Set Priority</span>
@@ -262,12 +259,12 @@ const getTaskForm = function() {
           </li>
         </ul>
       </div>
-      <div class="dropdown task-projects">
-        <button type="button" class="btn selection-display project-select-btn" data-bs-toggle="dropdown" aria-expanded="false"></button>
-        <ul class="dropdown-menu selection-list task-project-list"></ul>
+      <div class="dropdown" id="task-projects">
+        <button type="button" class="btn selection-display" id="project-select-btn" data-bs-toggle="dropdown" aria-expanded="false"></button>
+        <ul class="dropdown-menu selection-list" id="task-project-list"></ul>
       </div>
-      <button class="task-submit-btn" type="submit">Add Task</button>
-      <button class="task-cancel-btn" type="button">Cancel</button>
+      <button id="task-submit-btn" type="submit">Add Task</button>
+      <button id="task-cancel-btn" type="button">Cancel</button>
     </form>
   `)
 
@@ -275,7 +272,7 @@ const getTaskForm = function() {
   date.defaultValue = format(new Date(), 'yyyy-MM-dd')
 
   Project.storage().forEach(project => {
-    let list = form.querySelector('.task-project-list')
+    let list = form.querySelector('#task-project-list')
 
     list.insertAdjacentHTML('beforeend', `
       <li class="selection-item" data-value="${project.name}" data-color="${project.color}" data-id="${project.id}">
@@ -286,9 +283,9 @@ const getTaskForm = function() {
     `)
   })
 
-  let projects = form.querySelectorAll('.task-project-list li')
+  let projects = form.querySelectorAll('#task-project-list li')
   projects.forEach(project => {
-    let select = form.querySelector('.project-select-btn')
+    let select = form.querySelector('#project-select-btn')
     let input = form.querySelector('[name="task-project"]')
 
     project.addEventListener('click', () => {
@@ -300,8 +297,8 @@ const getTaskForm = function() {
     })
   })
 
-  let priorities = form.querySelectorAll('.task-priority-list li')
-  let priority = form.querySelector('.priority-select-btn')
+  let priorities = form.querySelectorAll('#task-priority-list li')
+  let priority = form.querySelector('#priority-select-btn')
 
   priorities.forEach(item => {
     let input = form.querySelector('[name="task-priority"]')
@@ -324,13 +321,13 @@ const loadTaskForm = function(container) {
   container.insertAdjacentElement('afterbegin', getTaskForm())
 
   let form = container.querySelector('form')
-  let cancel = form.querySelector('.task-cancel-btn')
+  let cancel = form.querySelector('#task-cancel-btn')
 
   let page = document.querySelector('.tasks-list').dataset.id
   let projectInput = form.querySelector('[name="task-project"]')
   let priorityInput = form.querySelector('[name="task-priority"]')
-  let projects = [...form.querySelectorAll('.task-project-list li')]
-  let project = form.querySelector('.project-select-btn')
+  let projects = [...form.querySelectorAll('#task-project-list li')]
+  let project = form.querySelector('#project-select-btn')
   let template = projects.find(p => p.dataset.id == page)
 
   if (!template) {
@@ -383,21 +380,21 @@ const loadTaskEdit = function({ page, task }) {
   item.querySelector('[name="task-priority"]').value = task.priority
   item.querySelector('[name="task-project"]').value = task.project
 
-  let priority = item.querySelector('.priority-select-btn')
+  let priority = item.querySelector('#priority-select-btn')
   let priorityTemplate = item.querySelector(`li[data-value="${task.priority}"]`)
 
   priority.dataset.value = task.priority
   priority.innerHTML = priorityTemplate.innerHTML
 
-  let project = item.querySelector('.project-select-btn')
+  let project = item.querySelector('#project-select-btn')
   let projectTemplate = item.querySelector(`li[data-value="${task.project}"]`)
 
   project.dataset.value = task.project
   project.dataset.color = projectTemplate.dataset.color
   project.innerHTML = projectTemplate.innerHTML
 
-  let submit = item.querySelector('.task-submit-btn')
-  let cancel = item.querySelector('.task-cancel-btn')
+  let submit = item.querySelector('#task-submit-btn')
+  let cancel = item.querySelector('#task-cancel-btn')
 
   submit.textContent = 'Edit Task'
 

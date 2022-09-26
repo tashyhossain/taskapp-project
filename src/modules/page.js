@@ -26,6 +26,16 @@ const loadPage = function(page) {
   Event.publish('PROJECTS-REQUEST', Project.storage())
 }
 
+const getProjectStats = function({ container, project }) {
+  container.querySelector('.test').innerHTML = `
+    <span class="project-stat">
+      ${project.tasks.filter(t => !t.status).length}
+    </span>
+  `
+
+  return container
+}
+
 const loadProjects = function(projects) {
   let nav = document.querySelector('.projects-list')
   
@@ -34,27 +44,32 @@ const loadProjects = function(projects) {
 
   projects.forEach(project => {
     nav.insertAdjacentHTML('beforeend', `
-      <div class="btn-group">
-        <button type="button" class="btn nav-project-btn" data-id="${project.id}" data-title="Project: ${project.name}">
-          ${project.color} - ${project.name}
-        </button>
-        <button type="button" class="btn dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-three-dots-vertical"></i>
+      <div class="project-btn-container">
+        <button type="button" class="selection-display project-btn" id="nav-project-btn" data-id="${project.id}" data-title="Project: ${project.name}" data-color="${project.color}" data-ts-toggle="dropdown" aria-expanded="false">
+          <span class="selection-color"></span>
+          <span class="selection-name">${project.name}</span>
+          <span class="selection-etc">${project.tasks.filter(t => !t.status).length}</span>
         </button>
         <ul class="dropdown-menu">
-          <li><button class="dropdown-item project-edit-btn">Edit</button></li>
-          <li><button class="dropdown-item project-delete-btn">Delete</button></li>
+          <li><button class="dropdown-item" id="project-edit-btn">Edit</button></li>
+          <li><button class="dropdown-item" id="project-delete-btn">Delete</button></li>
         </ul>
       </div>
     `)
 
     let btn = nav.querySelector(`[data-id="${project.id}"]`)
-    let edit = btn.parentNode.querySelector('.project-edit-btn')
-    let del = btn.parentNode.querySelector('.project-delete-btn')
+    let list = btn.parentNode.querySelector('.dropdown-menu')
+    let edit = btn.parentNode.querySelector('#project-edit-btn')
+    let del = btn.parentNode.querySelector('#project-delete-btn')
 
     btn.addEventListener('click', () => {
       Event.publish('PAGE-REQUEST', getPage(btn.dataset.id))
     })
+
+    btn.addEventListener('contextmenu', (e) => {
+      e.preventDefault()
+      list.classList.add('show')
+    })  
 
     edit.addEventListener('click', () => {
       Event.publish('PROJECT-EDIT-REQUEST', project)
@@ -63,15 +78,23 @@ const loadProjects = function(projects) {
     del.addEventListener('click', () => {
       Event.publish('PROJECT-DELETE-REQUEST', project)
     })
+
+    document.addEventListener('click', () => {
+      list.classList.remove('show')
+    })
+
   })
 
+
   nav.insertAdjacentHTML('beforeend', `
-    <button type="button" class="show-project-form-btn">
-      Add Project
+    <button type="button" class="btn add-project-btn" id="show-project-form-btn">
+      <span class="btn-icon"><i class="bi bi-plus-circle"></i></span> 
+      <span class="btn-name">Add Project</span>
     </button>
   `)
 
-  let btn = nav.querySelector('.show-project-form-btn')
+  let btn = nav.querySelector('#show-project-form-btn')
+  
   btn.addEventListener('click', () => {
     Event.publish('PROJECT-FORM-REQUEST', document.body)
   })
@@ -126,8 +149,8 @@ const loadTasks = function({ page, tasks }) {
               <i class="bi bi-three-dots-vertical"></i>
             </button>
             <ul class="dropdown-menu">
-              <button class="task-edit-btn">Edit</button>
-              <button class="task-delete-btn">Delete</button>
+              <button class="btn btn-primary" id="task-edit-btn">Edit</button>
+              <button class="btn btn-secondary" id="task-delete-btn">Delete</button>
             </ul>
           </div>
         </div>
@@ -145,13 +168,13 @@ const loadTasks = function({ page, tasks }) {
       })
     })
 
-    item.querySelector('.task-edit-btn').addEventListener('click', (e) => {
+    item.querySelector('#task-edit-btn').addEventListener('click', (e) => {
       e.preventDefault()
       Event.publish('TASKS-REQUEST', page)
       Event.publish('TASK-EDIT-REQUEST', { page, task })
     })
   
-    item.querySelector('.task-delete-btn').addEventListener('click', (e) => {
+    item.querySelector('#task-delete-btn').addEventListener('click', (e) => {
       Event.publish('TASK-DELETE-REQUEST', task)
     })
 
@@ -162,10 +185,25 @@ const loadTasks = function({ page, tasks }) {
 
 export const loadTaskBtn = function(page) {
   page.insertAdjacentHTML('afterbegin', `
-    <button class="show-task-form-btn" type="button">Add Task</button>
+    <button class="btn-add-task" id="show-task-form-btn" type="button">
+      <span class="btn-icon"><i class="bi bi-plus-circle"></i></span>
+      <span class="btn-name">Add Task</span>
+    </button>
   `)
 
-  let btn = page.querySelector('.show-task-form-btn')
+  let btn = page.querySelector('#show-task-form-btn')
+
+  // btn.addEventListener('mouseover', () => {
+  //   btn.querySelector('.btn-icon').innerHTML = `
+  //     <i class="bi bi-plus-circle-fill"></i>
+  //   `
+  // })
+
+  // btn.addEventListener('mouseout', () => {
+  //   btn.querySelector('.btn-icon').innerHTML = `
+  //     <i class="bi bi-plus-circle"></i>
+  //   `
+  // })
 
   btn.addEventListener('click', (e) => {
     Event.publish('TASK-FORM-REQUEST', page)
@@ -176,6 +214,7 @@ export const loadTaskBtn = function(page) {
 const Page = function() {
   Event.subscribe('PAGE-REQUEST', loadPage)
   Event.subscribe('PROJECTS-REQUEST', loadProjects)
+  Event.subscribe('PROJECT-STATS-REQUEST', getProjectStats)
   Event.subscribe('MODAL-REQUEST', loadModal)
   Event.subscribe('TASK-BTN-REQUEST', loadTaskBtn)
   Event.subscribe('TASKS-REQUEST', getTasks)

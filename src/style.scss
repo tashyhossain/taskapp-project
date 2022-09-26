@@ -4,3 +4,119 @@
 .dropdown {
   cursor: default;
 }
+
+form.project-form label,
+form.project-form input,
+button#color-select-btn {
+  width: 100%;
+}
+
+input[name="project-name"]:focus {
+  outline: none;
+}
+
+button#color-select-btn {
+  border-radius: 3px;
+  border: 1px solid #767676;
+  background: #FFFFFF;
+}
+
+button.selection-display,
+li.selection-item {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  cursor: pointer;
+}
+
+li.selection-item:hover {
+  background: #EFEFEF;
+}
+
+span.selection-name {
+  flex: 1;
+  margin-right: 5px;
+  text-align: left;
+  font-size: 0.9em;
+}
+
+span.selection-color {
+  width: 10px;
+  height: 10px;
+  margin: 0 10px;
+  border-radius: 50%;
+}
+
+button.project-btn span.selection-color {
+  margin-right: 20px;
+}
+
+span.selection-icon { 
+  margin: 0 7px;
+}
+
+span.selection-etc {
+  padding: 0 10px;
+  color: #ACACAC;
+  font-size: 0.6em;
+}
+
+[data-value="inbox"] span.selection-icon {
+  color: #4df8dc;
+}
+
+[data-color="GREY"] span.selection-color {
+  background: #C4C4C4;
+}
+
+[data-color="BLUE"] span.selection-color {
+  background: #1669EE;
+}
+
+[data-color="PURPLE"] span.selection-color {
+  background: #7316EE;
+}
+
+[data-color="PINK"] span.selection-color {
+  background: #EE1689;
+}
+
+[data-color="RED"] span.selection-color {
+  background: #F11045;
+}
+
+[data-color="ORANGE"] span.selection-color {
+  background: #EE7B16;
+}
+
+[data-color="YELLOW"] span.selection-color {
+  background: #F3D71C;
+}
+
+[data-color="GREEN"] span.selection-color {
+  background: #8BF31C;
+}
+
+li[data-value="0"] {
+  display: none;
+}
+
+[data-value="0"] span.selection-icon {
+  color: #616161;
+}
+
+[data-value="1"] span.selection-icon {
+  color: #F3D71C;
+}
+
+[data-value="2"] span.selection-icon {
+  color: #EE7B16;
+}
+
+[data-value="3"] span.selection-icon {
+  color: #F11045;
+}
+
+[data-value="4"] span.selection-icon {
+  color: #7316EE;
+}

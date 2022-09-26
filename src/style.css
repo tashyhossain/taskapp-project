@@ -1,105 +1,180 @@
-form.project-form label,
-form.project-form input,
-button.color-select-btn {
+body {
   width: 100%;
+  height: 100%;
+  color: #2D2A2B;
 }
 
-input[name="project-name"]:focus {
+button {
+  margin: 0;
+  padding: 0;
   outline: none;
+  border: 0;
+  background: none;
 }
 
-button.color-select-btn {
-  border-radius: 3px;
-  border: 1px solid #767676;
+div.app {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+  height: 100vh;
+}
+
+section.nav {
+  display: flex;
+  flex-flow: column wrap;
+  width: 250px;
   background: #FFFFFF;
 }
 
-button.selection-display,
-li.selection-item {
+header.app-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100px;
+}
+
+nav.pages {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center;
+  align-self: flex-start;
+  width: 100%;
+}
+
+nav.pages button {
   display: flex;
   align-items: center;
+  width: 210px;
   padding: 5px;
-  cursor: pointer;
-}
-
-li.selection-item:hover {
-  background: #EFEFEF;
-}
-
-span.selection-name {
-  flex: 1;
-  margin-right: 5px;
   text-align: left;
+}
+
+
+nav.pages button.btn:hover {
+  background: #ECEEFD;
+}
+
+span.page-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  background: #FFFFFF;
+}
+
+span.page-name {
+  margin: 0 10px;
   font-size: 0.9em;
 }
 
-span.selection-color {
-  width: 10px;
-  height: 10px;
-  margin: 0 10px;
-  border-radius: 50%;
+button[data-id="upcoming"] span.page-icon {
+  font-size: 0.9em;
 }
 
-span.selection-icon { 
-  margin: 0 7px;
+nav.projects {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  align-self: flex-start;
+  flex: 1;
+  width: 100%;
 }
 
-[data-value="inbox"] span.selection-icon {
-  color: #4df8dc;
+div.projects-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 210px;
+  margin: 10px 0 0 0;
 }
 
-[data-color="GREY"] span.selection-color {
-  background: #C4C4C4;
+div.projects-title div.h6 {
+  margin: 0;
 }
 
-[data-color="BLUE"] span.selection-color {
-  background: #1669EE;
+div.projects-list {
+  display: flex;
+  flex-flow: column wrap;
+  width: 210px;
 }
 
-[data-color="PURPLE"] span.selection-color {
-  background: #7316EE;
+div.project-btn-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
-[data-color="PINK"] span.selection-color {
-  background: #EE1689;
+button.project-btn {
+  display: flex;
+  width: 100%;
 }
 
-[data-color="RED"] span.selection-color {
-  background: #F11045;
+button.project-btn:hover {
+  border-radius: 5px;
+  background: #EFEFEF;
 }
 
-[data-color="ORANGE"] span.selection-color {
-  background: #EE7B16;
+button.btn.add-project-btn {
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-[data-color="YELLOW"] span.selection-color {
-  background: #F3D71C;
+button.btn.add-project-btn span.btn-name {
+  opacity: 0.7;
 }
 
-[data-color="GREEN"] span.selection-color {
-  background: #8BF31C;
+button.btn.add-project-btn:hover span.btn-name {
+  opacity: 1;
 }
 
-li[data-value="0"] {
-  display: none;
+/* TOOLBAR */
+
+section.main {
+  display: flex;
+  flex-flow: column wrap;
+  flex: 1;
+  background: #F0F3FB;
 }
 
-[data-value="0"] span.selection-icon {
-  color: #616161;
+header.toolbar {
+  display: flex;
+  flex-flow: row wrap;
 }
 
-[data-value="1"] span.selection-icon {
-  color: #F3D71C;
+div.page-title {
+  font-weight: bold;
+  font-size: 0.9em;
 }
 
-[data-value="2"] span.selection-icon {
-  color: #EE7B16;
+div.current-date {
+  font-size: 0.8em;
 }
 
-[data-value="3"] span.selection-icon {
-  color: #F11045;
+span.current-day {
+  color: #4962E0;
+  font-weight: bold;
 }
 
-[data-value="4"] span.selection-icon {
-  color: #7316EE;
+/* MAIN */
+
+button.btn-add-task {
+  width: 100%;
+  text-align: left;
+}
+
+button.btn-add-task span.btn-name {
+  opacity: 0.7;
+}
+
+button.btn-add-task:hover span.btn-name {
+  opacity: 1;
+}
+
+span.btn-icon {
+  margin-right: 10px;
 }

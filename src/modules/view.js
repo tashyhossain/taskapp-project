@@ -4,27 +4,44 @@ import { format } from 'date-fns'
 const View = function(root) {
   root.innerHTML = `
     <section class="nav">
+      <header class="app-title">
+        <div class="h2">task.it</div>
+      </header>
       <nav class="pages">
-        <button class="page-btn" data-id="inbox" data-title="Inbox">Inbox</button>
-        <button class="page-btn" data-id="today" data-title="Today's Tasks">Today</button>
-        <button class="page-btn" data-id="upcoming" data-title="Upcoming Tasks">Upcoming</button>
+        <button class="btn page-btn" data-id="inbox" data-title="Inbox">
+          <span class="page-icon"><i class="bi bi-inbox"></i></span>
+          <span class="page-name">Inbox</span>
+        </button>
+        <button class="btn page-btn" data-id="today" data-title="Today's Tasks">
+          <span class="page-icon"><i class="bi bi-intersect"></i></span>
+          <span class="page-name">Today</span>
+        </button>
+        <button class="btn page-btn" data-id="upcoming" data-title="Upcoming Tasks">
+          <span class="page-icon"><i class="bi bi-calendar"></i></span>
+          <span class="page-name">Upcoming</span>
+        </button>
+        <button class="btn projects-btn">
+          <span class="page-icon"><i class="bi bi-folder2"></i></span>
+          <span class="page-name">Project</span>
+        </button>
       </nav>
       <nav class="projects">
-        <div class="projects-title">Projects</div>
         <div class="projects-list"></div>
       </nav>
     </section>
     <section class="main">
-      <div class="main-toolbar">
-        <div class="page-title"></div>
-        <div class="current-date"></div>
-      </div>
-      <main class="tasks">
-        <div class="tasks-list"></div>
+      <header class="toolbar container px-5 py-4">
+        <div class="app-info">
+          <div class="page-title"></div>
+          <div class="current-date"></div>
+        </div>
+      </header>
+      <main class="tasks container px-5">
+        <div class="tasks-list container px-0 py-2"></div>
       </main>
     </section>
   `
-
+  
   let date = root.querySelector('.current-date')
   let pages = root.querySelectorAll('.page-btn')
   
