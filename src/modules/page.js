@@ -2,7 +2,7 @@ import Event from './event'
 import Project from './project'
 import Task from './task'
 import * as bootstrap from 'bootstrap'
-import { isToday, isAfter, parseISO } from 'date-fns'
+import { format, isBefore, isToday, isAfter, parseISO } from 'date-fns'
 
 export const getPage = function(name) {
   let page = document.querySelector(`button[data-id="${name}"]`)
@@ -26,14 +26,8 @@ const loadPage = function(page) {
   Event.publish('PROJECTS-REQUEST', Project.storage())
 }
 
-const getProjectStats = function({ container, project }) {
-  container.querySelector('.test').innerHTML = `
-    <span class="project-stat">
-      ${project.tasks.filter(t => !t.status).length}
-    </span>
-  `
-
-  return container
+const loadProjectStats = function({ container, project }) {
+  container.innerHTML = project.tasks.filter(t => !t.status).length
 }
 
 const loadProjects = function(projects) {
@@ -48,7 +42,7 @@ const loadProjects = function(projects) {
         <button type="button" class="selection-display project-btn" id="nav-project-btn" data-id="${project.id}" data-title="Project: ${project.name}" data-color="${project.color}" data-ts-toggle="dropdown" aria-expanded="false">
           <span class="selection-color"></span>
           <span class="selection-name">${project.name}</span>
-          <span class="selection-etc">${project.tasks.filter(t => !t.status).length}</span>
+          <span class="selection-etc"></span>
         </button>
         <ul class="dropdown-menu">
           <li><button class="dropdown-item" id="project-edit-btn">Edit</button></li>
@@ -58,9 +52,12 @@ const loadProjects = function(projects) {
     `)
 
     let btn = nav.querySelector(`[data-id="${project.id}"]`)
+    let stats = btn.querySelector('.selection-etc')
     let list = btn.parentNode.querySelector('.dropdown-menu')
     let edit = btn.parentNode.querySelector('#project-edit-btn')
     let del = btn.parentNode.querySelector('#project-delete-btn')
+
+    Event.publish('PROJECT-STATS-REQUEST', { container: stats, project })
 
     btn.addEventListener('click', () => {
       Event.publish('PAGE-REQUEST', getPage(btn.dataset.id))
@@ -85,11 +82,10 @@ const loadProjects = function(projects) {
 
   })
 
-
   nav.insertAdjacentHTML('beforeend', `
-    <button type="button" class="btn add-project-btn" id="show-project-form-btn">
-      <span class="btn-icon"><i class="bi bi-plus-circle"></i></span> 
-      <span class="btn-name">Add Project</span>
+    <button type="button" class="add-project-btn" id="show-project-form-btn">
+      <span class="btn-icon"><i class="bi bi-plus"></i></span> 
+      <span class="btn-name">New Project</span>
     </button>
   `)
 
@@ -135,36 +131,55 @@ const loadTasks = function({ page, tasks }) {
   tasks.forEach(task => {
     page.insertAdjacentHTML('beforeend', `
       <div class="task-item" data-id="${task.id}">
-        <div class="task-content">
+        <div class="task-wrapper">
           <div class="task-status">
-            ${task.status ? '<input type="checkbox" checked>'
-                          : '<input type="checkbox">'}
+            <div class="task-status-icon">
+            <div class="task-status-input">
+            ${task.status ? `<input type="checkbox" checked>`
+                          : `<input type="checkbox">`}
           </div>
-          <div class="task-name">${task.name}</div>
-          <div class="task-date">${task.date}</div>
-          <div class="task-priority">${task.priority}</div>
-          <div class="task-project">${task.project}</div>
-          <div class="dropdown task-tools">
-            <button type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
-            <ul class="dropdown-menu">
-              <button class="btn btn-primary" id="task-edit-btn">Edit</button>
-              <button class="btn btn-secondary" id="task-delete-btn">Delete</button>
-            </ul>
+          <div class="task-status-display" data-value="${task.priority}">
+            ${task.status ? `<i class="bi bi-check-circle-fill"></i>`
+                          : `<i class="bi bi-circle"></i>`}
+          </div>
+            </div>
+          </div>
+          <div class="task-content">
+            <div class="task-details">
+              <div class="task-name">${task.name}</div>
+              ${task.desc ? `<div class="task-desc">${task.desc}</div>`
+                          : ''}
+            </div>
+            <div class="task-etc">
+              <div class="task-date">
+                <span class="task-date-icon"><i class="bi bi-calendar-event"></i></span>
+                <span class="task-date-info">${format(parseISO(task.date), 'MMM dd')}</span>
+              </div>
+              <div class="task-project selection-display"></div>
+            </div>
           </div>
         </div>
+        <ul class="dropdown-menu">
+          <li><button class="dropdown-item" id="task-edit-btn">Edit</button></li>
+          <li><button class="dropdown-item" id="task-delete-btn">Delete</button></li>
+        </ul>
       </div>
     `)
-
+    
     let item = page.querySelector(`[data-id="${task.id}"]`)
+    let list = item.querySelector('.dropdown-menu')
+
+    item.addEventListener('contextmenu', (e) => {
+      e.preventDefault()
+      list.classList.add('show')
+    })
 
     item.querySelector('.task-status input').addEventListener('change', (e) => {
       e.preventDefault()
       Event.publish('TASK-CHECK-REQUEST', { 
         page: page.dataset.id, 
         task, 
-        status: e.target.hasAttribute('checked') 
+        status: e.target.hasAttribute('checked')
       })
     })
 
@@ -178,6 +193,41 @@ const loadTasks = function({ page, tasks }) {
       Event.publish('TASK-DELETE-REQUEST', task)
     })
 
+    document.addEventListener('click', () => {
+      list.classList.remove('show')
+    })
+
+    let overdue = isBefore(parseISO(task.date), new Date().setHours(0, 0, 0, 0))
+    
+    if (overdue) {
+      item.querySelector('.task-date').classList.add('overdue')
+      console.log('OVERDUE')
+    }
+
+    let project = Project.storage().find(p => p.name == task.project)
+    let projectBtn = item.querySelector('.task-project') 
+
+    if (task.project == 'inbox') {
+      projectBtn.innerHTML = `
+        <span class="selection-name">${task.project}</span>
+        <span class="selection-icon"><i class="bi bi-inbox"></i></span>
+      `
+
+      projectBtn.dataset.value = 'inbox'
+      projectBtn.addEventListener('click', () => {
+        Event.publish('PAGE-REQUEST', getPage('inbox'))
+      })
+    } else {
+      projectBtn.innerHTML = `
+        <span class="selection-name">${task.project}</span>
+        <span class="selection-color"></span>
+      `
+
+      projectBtn.dataset.color = project.color
+      projectBtn.addEventListener('click', () => {
+        Event.publish('PAGE-REQUEST', getProjectPage(project))
+      }) 
+    }
   })
 
   Event.publish('TASK-BTN-REQUEST', page)
@@ -185,25 +235,13 @@ const loadTasks = function({ page, tasks }) {
 
 export const loadTaskBtn = function(page) {
   page.insertAdjacentHTML('afterbegin', `
-    <button class="btn-add-task" id="show-task-form-btn" type="button">
-      <span class="btn-icon"><i class="bi bi-plus-circle"></i></span>
-      <span class="btn-name">Add Task</span>
+    <button class="add-task-btn" id="show-task-form-btn" type="button">
+      <span class="btn-icon"><i class="bi bi-plus-circle"></i></span> 
+      <span class="btn-name">New Task</span>
     </button>
   `)
 
   let btn = page.querySelector('#show-task-form-btn')
-
-  // btn.addEventListener('mouseover', () => {
-  //   btn.querySelector('.btn-icon').innerHTML = `
-  //     <i class="bi bi-plus-circle-fill"></i>
-  //   `
-  // })
-
-  // btn.addEventListener('mouseout', () => {
-  //   btn.querySelector('.btn-icon').innerHTML = `
-  //     <i class="bi bi-plus-circle"></i>
-  //   `
-  // })
 
   btn.addEventListener('click', (e) => {
     Event.publish('TASK-FORM-REQUEST', page)
@@ -214,7 +252,7 @@ export const loadTaskBtn = function(page) {
 const Page = function() {
   Event.subscribe('PAGE-REQUEST', loadPage)
   Event.subscribe('PROJECTS-REQUEST', loadProjects)
-  Event.subscribe('PROJECT-STATS-REQUEST', getProjectStats)
+  Event.subscribe('PROJECT-STATS-REQUEST', loadProjectStats)
   Event.subscribe('MODAL-REQUEST', loadModal)
   Event.subscribe('TASK-BTN-REQUEST', loadTaskBtn)
   Event.subscribe('TASKS-REQUEST', getTasks)

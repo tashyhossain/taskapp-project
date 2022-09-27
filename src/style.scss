@@ -29,13 +29,18 @@ li.selection-item {
   cursor: pointer;
 }
 
+div.selection-display {
+  display: flex;
+  align-items: center;
+  cursor: default;
+}
+
 li.selection-item:hover {
   background: #EFEFEF;
 }
 
 span.selection-name {
   flex: 1;
-  margin-right: 5px;
   text-align: left;
   font-size: 0.9em;
 }
@@ -44,7 +49,8 @@ span.selection-color {
   width: 10px;
   height: 10px;
   margin: 0 10px;
-  border-radius: 50%;
+  font-size: 0.6em;
+  border-radius: 3px;
 }
 
 button.project-btn span.selection-color {
@@ -61,24 +67,46 @@ span.selection-etc {
   font-size: 0.6em;
 }
 
+ul#project-colors-list {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: scroll;
+}
+
 [data-value="inbox"] span.selection-icon {
-  color: #4df8dc;
+  color: #90E0DE;
 }
 
 [data-color="GREY"] span.selection-color {
   background: #C4C4C4;
 }
 
+[data-color="LBLUE"] span.selection-color {
+  background: #96C3EB;
+}
+
 [data-color="BLUE"] span.selection-color {
-  background: #1669EE;
+  background: #4073FF;
 }
 
 [data-color="PURPLE"] span.selection-color {
-  background: #7316EE;
+  background: #AF38EB;
+}
+
+[data-color="LAVENDER"] span.selection-color {
+  background: #EB96EB;
 }
 
 [data-color="PINK"] span.selection-color {
   background: #EE1689;
+}
+
+[data-color="PEACH"] span.selection-color {
+  background: #FC9C96;
+}
+
+[data-color="BERRY"] span.selection-color {
+  background: #B8255F;
 }
 
 [data-color="RED"] span.selection-color {
@@ -94,29 +122,38 @@ span.selection-etc {
 }
 
 [data-color="GREEN"] span.selection-color {
-  background: #8BF31C;
+  background: #7ECC49;
 }
 
-li[data-value="0"] {
-  display: none;
+[data-color="MINT"] span.selection-color {
+  background: #6ACCBC;
 }
 
+[data-color="TEAL"] span.selection-color {
+  background: #158FAD;
+}
+
+div.task-status-display[data-value="0"] i,
 [data-value="0"] span.selection-icon {
   color: #616161;
 }
 
+div.task-status-display[data-value="1"] i,
 [data-value="1"] span.selection-icon {
   color: #F3D71C;
 }
 
+div.task-status-display[data-value="2"] i,
 [data-value="2"] span.selection-icon {
   color: #EE7B16;
 }
 
+div.task-status-display[data-value="3"] i,
 [data-value="3"] span.selection-icon {
   color: #F11045;
 }
 
+div.task-status-display[data-value="4"] i,
 [data-value="4"] span.selection-icon {
   color: #7316EE;
 }

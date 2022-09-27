@@ -47,6 +47,7 @@ export default class Task {
       Task.edit(task)
     } else {
       current.name = task.name
+      current.desc = task.desc
       current.date = task.date
       current.priority = task.priority
 

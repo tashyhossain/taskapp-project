@@ -20,16 +20,17 @@ const View = function(root) {
           <span class="page-icon"><i class="bi bi-calendar"></i></span>
           <span class="page-name">Upcoming</span>
         </button>
-        <button class="btn projects-btn">
-          <span class="page-icon"><i class="bi bi-folder2"></i></span>
+        <button class="btn projects-btn" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="false" aria-controls="project-list">
+          <span class="page-icon"><i class="bi bi-folder"></i></span>
           <span class="page-name">Project</span>
+          <span class="page-etc"><i class="bi bi-caret-down-fill"></i></span>
         </button>
       </nav>
       <nav class="projects">
-        <div class="projects-list"></div>
+        <div class="collapse projects-list" id="project-list"></div>
       </nav>
     </section>
-    <section class="main">
+    <section class="main container px-lg-5 px-md-5 py-2">
       <header class="toolbar container px-5 py-4">
         <div class="app-info">
           <div class="page-title"></div>
