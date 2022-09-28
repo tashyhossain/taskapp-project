@@ -11,14 +11,17 @@ const View = function(root) {
         <button class="btn page-btn" data-id="inbox" data-title="Inbox">
           <span class="page-icon"><i class="bi bi-inbox"></i></span>
           <span class="page-name">Inbox</span>
+          <span class="page-etc selection-etc"></span>
         </button>
         <button class="btn page-btn" data-id="today" data-title="Today's Tasks">
           <span class="page-icon"><i class="bi bi-intersect"></i></span>
           <span class="page-name">Today</span>
+          <span class="page-etc selection-etc"></span>
         </button>
         <button class="btn page-btn" data-id="upcoming" data-title="Upcoming Tasks">
           <span class="page-icon"><i class="bi bi-calendar"></i></span>
           <span class="page-name">Upcoming</span>
+          <span class="page-etc selection-etc"></span>
         </button>
         <button class="btn projects-btn" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="false" aria-controls="project-list">
           <span class="page-icon"><i class="bi bi-folder"></i></span>

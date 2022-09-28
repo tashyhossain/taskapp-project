@@ -2,6 +2,7 @@ body {
   width: 100%;
   height: 100%;
   color: #2D2A2B;
+  background: #F0F3FB;
 }
 
 button {
@@ -72,7 +73,11 @@ span.page-name {
   font-size: 0.9em;
 }
 
-span.page-etc {
+button.page-btn span.page-etc {
+  margin: 0 0 0 2px;
+}
+
+button.projects-btn span.page-etc {
   margin: 0 3px;
 }
 

@@ -17,6 +17,7 @@ export const getProjectPage = function(project) {
 const loadPage = function(page) {
   let title = document.querySelector('.page-title')
   let content = document.querySelector('.tasks-list')
+  let views = document.querySelectorAll('.page-btn')
   
   title.textContent = page.title
   content.innerHTML = ''
@@ -24,10 +25,31 @@ const loadPage = function(page) {
 
   Event.publish('TASKS-REQUEST', content)
   Event.publish('PROJECTS-REQUEST', Project.storage())
+  Event.publish('STATS-REQUEST', views)
+}
+
+const loadViewStats = function(views) {
+  let stat, tasks = Task.storage()
+
+  views.forEach(view => {
+    let container = view.querySelector('.selection-etc')
+
+    if (view.dataset.id == 'today') {
+      stat = tasks.filter(t => isToday(parseISO(t.date)))
+    } else if (view.dataset.id === 'inbox') {
+      stat = tasks.filter(t => t.project == 'inbox')
+    } else if (view.dataset.id === 'upcoming') {
+      stat = tasks.filter(t => isAfter(parseISO(t.date), new Date()))
+    }
+
+    container.textContent = stat.length == 0 ? '' : stat.length
+  })
 }
 
 const loadProjectStats = function({ container, project }) {
-  container.innerHTML = project.tasks.filter(t => !t.status).length
+  let tasks = project.tasks.filter(t => !t.status)
+
+  container.innerHTML = tasks.length == 0 ? '' : tasks.length
 }
 
 const loadProjects = function(projects) {
@@ -107,6 +129,7 @@ const loadModal = function(container) {
   })
 }
 
+
 const getTasks = function(page) {
   let tasks, storage = Task.storage()
 
@@ -117,11 +140,12 @@ const getTasks = function(page) {
   } else if (page.dataset.id === 'upcoming') {
     tasks = storage.filter(t => isAfter(parseISO(t.date), new Date()))
   } else {
-    console.log(page.dataset.id)
     tasks = Project.storage().find(p => p.id === page.dataset.id).tasks
   }
 
-  tasks = tasks.sort((a, b) => a.priority > b.priority ? -1 : 1)
+  tasks = tasks.filter(t => t.priority)
+               .sort((a, b) => new Date(a.date) < new Date(b.date) ? -1 : 1)
+               .sort((a, b) => a.priority > b.priority ? -1 : 1)
 
   Event.publish('RENDER-REQUEST', { page, tasks })
 }
@@ -252,6 +276,7 @@ export const loadTaskBtn = function(page) {
 const Page = function() {
   Event.subscribe('PAGE-REQUEST', loadPage)
   Event.subscribe('PROJECTS-REQUEST', loadProjects)
+  Event.subscribe('STATS-REQUEST', loadViewStats)
   Event.subscribe('PROJECT-STATS-REQUEST', loadProjectStats)
   Event.subscribe('MODAL-REQUEST', loadModal)
   Event.subscribe('TASK-BTN-REQUEST', loadTaskBtn)

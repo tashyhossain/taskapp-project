@@ -2,7 +2,7 @@ import Event from './event'
 import Project from './project'
 import Task from './task'
 import * as bootstrap from 'bootstrap'
-import { getPage, getProjectPage } from './page'
+import { getPage } from './page'
 import { v4 as uuidv4 } from 'uuid'
 import { format, isToday, isTomorrow, parseISO } from 'date-fns'
 
@@ -41,6 +41,10 @@ const getProjectForm = function() {
                   <span class="selection-color"></span>
                   <span class="selection-name">Purple</span>  
                 </li>
+                <li class="selection-item" data-color="VIOLET">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Violet</span>  
+                </li>
                 <li class="selection-item" data-color="LAVENDER">
                   <span class="selection-color"></span>
                   <span class="selection-name">Lavender</span>
@@ -61,13 +65,33 @@ const getProjectForm = function() {
                   <span class="selection-color"></span>
                   <span class="selection-name">Red</span> 
                 </li>
+                <li class="selection-item" data-color="SUNSET">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Sunset</span> 
+                </li>
                 <li class="selection-item" data-color="ORANGE">
                   <span class="selection-color"></span>
                   <span class="selection-name">Orange</span> 
                 </li>
+                <li class="selection-item" data-color="CLAY">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Clay</span>
+                </li>
+                <li class="selection-item" data-color="CIDER">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Cider</span>
+                </li>
                 <li class="selection-item" data-color="YELLOW">
                   <span class="selection-color"></span>
                   <span class="selection-name">Yellow</span> 
+                </li>
+                <li class="selection-item" data-color="OLIVE">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Olive</span> 
+                </li>
+                <li class="selection-item" data-color="LIME">
+                  <span class="selection-color"></span>
+                  <span class="selection-name">Lime</span> 
                 </li>
                 <li class="selection-item" data-color="GREEN">
                   <span class="selection-color"></span>
