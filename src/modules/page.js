@@ -14,6 +14,22 @@ export const getProjectPage = function(project) {
   return { id: project.id, title: `Project: ${project.name}` }
 }
 
+export const getTasks = function(page) {
+  let tasks, storage = Task.storage()
+
+  if (page.dataset.id == 'today') {
+    tasks = storage.filter(t => isToday(parseISO(t.date)))
+  } else if (page.dataset.id === 'inbox') {
+    tasks = storage.filter(t => t.project == 'inbox')
+  } else if (page.dataset.id === 'upcoming') {
+    tasks = storage.filter(t => isAfter(parseISO(t.date), new Date()))
+  } else {
+    tasks = Project.storage().find(p => p.id === page.dataset.id).tasks
+  }
+
+  return tasks
+}
+
 const loadPage = function(page) {
   let title = document.querySelector('.page-title')
   let content = document.querySelector('.tasks-list')
@@ -23,33 +39,47 @@ const loadPage = function(page) {
   content.innerHTML = ''
   content.dataset.id = page.id
 
+  views.forEach(view => {
+    Event.publish('STATS-REQUEST', { 
+      container: view.querySelector('.selection-etc'),
+      tasks: getTasks(view)
+    })
+  })
+
+  Event.publish('ACTIVE-BTN-REQUEST', page)
   Event.publish('TASKS-REQUEST', content)
   Event.publish('PROJECTS-REQUEST', Project.storage())
-  Event.publish('STATS-REQUEST', views)
 }
 
-const loadViewStats = function(views) {
-  let stat, tasks = Task.storage()
+const loadActiveBtn = function(page) {
+  let btns = document.querySelectorAll('nav.pages button') 
+  let projects = Project.storage().filter(p => p.name !== 'inbox')
+  let project = document.querySelector('.projects-btn')
+  let icon = project.querySelector('.page-etc')
 
-  views.forEach(view => {
-    let container = view.querySelector('.selection-etc')
+  btns.forEach(btn => {
+    btn.classList.remove('active')
+    icon.classList.remove('active')
 
-    if (view.dataset.id == 'today') {
-      stat = tasks.filter(t => isToday(parseISO(t.date)))
-    } else if (view.dataset.id === 'inbox') {
-      stat = tasks.filter(t => t.project == 'inbox')
-    } else if (view.dataset.id === 'upcoming') {
-      stat = tasks.filter(t => isAfter(parseISO(t.date), new Date()))
-    }
-
-    container.textContent = stat.length == 0 ? '' : stat.length
+    if (page.id == btn.dataset.id) {
+      btn.classList.add('active')
+    } else if (projects.find(p => p.id == page.id)) {
+      project.classList.add('active')
+      icon.classList.add('active')
+    } 
   })
 }
 
-const loadProjectStats = function({ container, project }) {
-  let tasks = project.tasks.filter(t => !t.status)
+const loadStats = function({ container, tasks }) {
+  tasks = tasks.filter(t => !t.status)
 
-  container.innerHTML = tasks.length == 0 ? '' : tasks.length
+  let overdue = tasks.find(t => isBefore(parseISO(t.date), new Date().setHours(0, 0, 0, 0)))
+  
+  if (overdue) {
+    container.classList.add('overdue')
+  }
+
+  container.textContent = tasks.length == 0 ? '' : tasks.length
 }
 
 const loadProjects = function(projects) {
@@ -74,12 +104,14 @@ const loadProjects = function(projects) {
     `)
 
     let btn = nav.querySelector(`[data-id="${project.id}"]`)
-    let stats = btn.querySelector('.selection-etc')
     let list = btn.parentNode.querySelector('.dropdown-menu')
     let edit = btn.parentNode.querySelector('#project-edit-btn')
     let del = btn.parentNode.querySelector('#project-delete-btn')
 
-    Event.publish('PROJECT-STATS-REQUEST', { container: stats, project })
+    Event.publish('STATS-REQUEST', { 
+      container: btn.querySelector('.selection-etc'), 
+      tasks: project.tasks 
+    })
 
     btn.addEventListener('click', () => {
       Event.publish('PAGE-REQUEST', getPage(btn.dataset.id))
@@ -129,19 +161,8 @@ const loadModal = function(container) {
   })
 }
 
-
-const getTasks = function(page) {
-  let tasks, storage = Task.storage()
-
-  if (page.dataset.id == 'today') {
-    tasks = storage.filter(t => isToday(parseISO(t.date)))
-  } else if (page.dataset.id === 'inbox') {
-    tasks = storage.filter(t => t.project == 'inbox')
-  } else if (page.dataset.id === 'upcoming') {
-    tasks = storage.filter(t => isAfter(parseISO(t.date), new Date()))
-  } else {
-    tasks = Project.storage().find(p => p.id === page.dataset.id).tasks
-  }
+const sortTasks = function(page) {
+  let tasks = getTasks(page)
 
   tasks = tasks.filter(t => t.priority)
                .sort((a, b) => new Date(a.date) < new Date(b.date) ? -1 : 1)
@@ -152,6 +173,7 @@ const getTasks = function(page) {
 
 const loadTasks = function({ page, tasks }) {
   page.innerHTML = ''
+  
   tasks.forEach(task => {
     page.insertAdjacentHTML('beforeend', `
       <div class="task-item" data-id="${task.id}">
@@ -275,12 +297,12 @@ export const loadTaskBtn = function(page) {
 
 const Page = function() {
   Event.subscribe('PAGE-REQUEST', loadPage)
+  Event.subscribe('ACTIVE-BTN-REQUEST', loadActiveBtn)  
   Event.subscribe('PROJECTS-REQUEST', loadProjects)
-  Event.subscribe('STATS-REQUEST', loadViewStats)
-  Event.subscribe('PROJECT-STATS-REQUEST', loadProjectStats)
+  Event.subscribe('STATS-REQUEST', loadStats)
   Event.subscribe('MODAL-REQUEST', loadModal)
   Event.subscribe('TASK-BTN-REQUEST', loadTaskBtn)
-  Event.subscribe('TASKS-REQUEST', getTasks)
+  Event.subscribe('TASKS-REQUEST', sortTasks)
   Event.subscribe('RENDER-REQUEST', loadTasks)
 }
 

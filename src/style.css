@@ -50,10 +50,16 @@ nav.pages button {
   width: 210px;
   padding: 5px;
   text-align: left;
+  border-radius: 5px;
 }
 
+nav.pages button.active {
+  outline: none;
+  border: 0;
+  background: #ECEEFD;
+}
 
-nav.pages button.btn:hover {
+nav.pages button:hover {
   background: #ECEEFD;
 }
 
@@ -73,12 +79,16 @@ span.page-name {
   font-size: 0.9em;
 }
 
-button.page-btn span.page-etc {
-  margin: 0 0 0 2px;
+button.projects-btn span.page-etc {
+  margin: 0 5px;
 }
 
-button.projects-btn span.page-etc {
-  margin: 0 3px;
+span.page-etc.open {
+  transform: rotate(180deg);
+}
+
+span.page-etc.active {
+  transform: rotate(-90deg);
 }
 
 button[data-id="upcoming"] span.page-icon {
@@ -273,7 +283,8 @@ div.task-date {
   text-transform: uppercase;
 }
 
-div.task-date.overdue {
+div.task-date.overdue,
+span.selection-etc.overdue {
   color: #F34D77;
 }
 

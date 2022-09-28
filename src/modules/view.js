@@ -1,5 +1,6 @@
 import Event from './event'
 import { format } from 'date-fns'
+import * as bootstrap from 'bootstrap'
 
 const View = function(root) {
   root.innerHTML = `
@@ -8,29 +9,29 @@ const View = function(root) {
         <div class="h2">task.it</div>
       </header>
       <nav class="pages">
-        <button class="btn page-btn" data-id="inbox" data-title="Inbox">
+        <button class="page-btn" data-id="inbox" data-title="Inbox">
           <span class="page-icon"><i class="bi bi-inbox"></i></span>
           <span class="page-name">Inbox</span>
           <span class="page-etc selection-etc"></span>
         </button>
-        <button class="btn page-btn" data-id="today" data-title="Today's Tasks">
+        <button class="page-btn" data-id="today" data-title="Today's Tasks">
           <span class="page-icon"><i class="bi bi-intersect"></i></span>
           <span class="page-name">Today</span>
           <span class="page-etc selection-etc"></span>
         </button>
-        <button class="btn page-btn" data-id="upcoming" data-title="Upcoming Tasks">
+        <button class="page-btn" data-id="upcoming" data-title="Upcoming Tasks">
           <span class="page-icon"><i class="bi bi-calendar"></i></span>
           <span class="page-name">Upcoming</span>
           <span class="page-etc selection-etc"></span>
         </button>
-        <button class="btn projects-btn" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="false" aria-controls="project-list">
+        <button class="projects-btn" data-id="project" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="false" aria-controls="project-list">
           <span class="page-icon"><i class="bi bi-folder"></i></span>
-          <span class="page-name">Project</span>
-          <span class="page-etc"><i class="bi bi-caret-down-fill"></i></span>
+          <span class="page-name">Projects</span>
+          <span class="page-etc"><i class="bi bi-chevron-down"></i></span>
         </button>
       </nav>
       <nav class="projects">
-        <div class="collapse projects-list" id="project-list"></div>
+        <div class="projects-list collapse" id="project-list"></div>
       </nav>
     </section>
     <section class="main container px-lg-5 px-md-5 py-2">
@@ -62,6 +63,18 @@ const View = function(root) {
       })
     })
   })
+
+  let project = document.querySelector('.projects-btn .page-etc')
+  let target = document.querySelector('.projects-list')
+
+  target.addEventListener('hide.bs.collapse', () => {
+    project.classList.remove('open')
+  })
+
+  target.addEventListener('show.bs.collapse', () => {
+    project.classList.add('open')
+  })
+
 }
 
 export default View
