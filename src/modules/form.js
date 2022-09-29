@@ -1,10 +1,9 @@
 import Event from './event'
 import Project from './project'
-import Task from './task'
 import * as bootstrap from 'bootstrap'
 import { getPage } from './page'
 import { v4 as uuidv4 } from 'uuid'
-import { format, isToday, isTomorrow, parseISO } from 'date-fns'
+import { format, isToday, isTomorrow, parseISO, startOfTomorrow } from 'date-fns'
 
 const getProjectForm = function() {
   let container = document.createElement('div')
@@ -123,9 +122,9 @@ const getProjectForm = function() {
   if (!colorSelect.dataset.color) colorSelect.dataset.color = 'GREY'
   colorInput.value = colorSelect.dataset.color
 
-  let content = container.querySelector('#project-colors-list')
+  let list = container.querySelector('#project-colors-list')
 
-  content.querySelectorAll('li').forEach(item => {
+  list.querySelectorAll('li').forEach(item => {
     item.addEventListener('click', () => {
       colorSelect.dataset.color = item.dataset.color
       colorSelect.innerHTML = item.innerHTML
@@ -134,7 +133,7 @@ const getProjectForm = function() {
     })
   })
 
-  let colorClone = content.querySelector(`li[data-color="${colorSelect.dataset.color}"]`)
+  let colorClone = list.querySelector(`li[data-color="${colorSelect.dataset.color}"]`)
   colorSelect.innerHTML = colorClone.innerHTML
 
   return container
@@ -145,7 +144,7 @@ const getProjectAlert = function(modal) {
   
   if (!container.querySelector('.alert')) {
     container.insertAdjacentHTML('beforeend', `
-      <div class="alert alert-danger alert-dismissible fade show" role="alert"> 
+      <div class="project-warning alert alert-warning alert-dismissible fade show" role="alert"> 
         <div><i class="bi bi-exclamation-triangle-fill"></i> This project already exists</div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
@@ -235,13 +234,13 @@ const getConfirmForm = function() {
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5>Confirm</h5>
+            <h5>Confirm Delete</h5>
           </div>
           <div class="modal-body"></div>
           <div class="modal-footer">
             <form class="confirmation-form">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-              <button type="submit" class="btn btn-primary confirm-delete-btn">Yes</button>
+              <button type="button" id="confirm-no-btn" data-bs-dismiss="modal">No</button>
+              <button type="submit" id="confirm-delete-btn">Yes</button>
             </form>
           </div>
         </div>
@@ -257,11 +256,11 @@ const loadConfirmation = function(project) {
 
   let container = document.querySelector('.confirmation-container')
   let content = container.querySelector('.modal')
-  let tasks = project.tasks.filter(t => t.status == false).length
+  let tasks = project.tasks.filter(t => t.status == false)
   
   content.querySelector('.modal-body').innerHTML = `
-    <p>${project.name} has ${tasks} incomplete task${tasks == 1 ? '' : 's'}.</p>
-    <p>Do you still want to delete ${project.name}?</p>
+    <p><b>${project.name}</b> has ${tasks.length} incomplete task${tasks.length == 1 ? '' : 's'}.</p>
+    <p>Do you still want to delete <b>${project.name}</b>?</p>
   `
 
   let form = content.querySelector('form')
@@ -352,8 +351,14 @@ const getTaskForm = function() {
 
   let date = form.querySelector('[name="task-date"]')
   let display = form.querySelector('.task-form-date-display')
+  let page = document.querySelector('.tasks-list')
 
-  date.defaultValue = format(new Date(), 'yyyy-MM-dd')
+  if (page.dataset.id !== 'upcoming') {
+    date.defaultValue = format(new Date(), 'yyyy-MM-dd')
+  } else {
+    date.defaultValue = format(startOfTomorrow(), 'yyyy-MM-dd')
+  }
+
   date.addEventListener('change', () => {
     Event.publish('TASK-DATE-REQUEST', { container: display, date: date.value })  
   })
@@ -368,7 +373,9 @@ const getTaskForm = function() {
         ${project.name == 'inbox' ? `<span class="selection-icon"><i class="bi bi-inbox"></i></span>
                                      <span class="selection-name">${project.name}</span>`
                                   : `<span class="selection-color"></span>
-                                     <span class="selection-name">${project.name}</span>`}
+                                     <span class="selection-name" title="${project.name}">
+                                      ${project.name.substring(0, 15)}${project.name.length > 15 ? '...' : ''}
+                                     </span>`}
       </li>
     `)
   })
@@ -411,21 +418,21 @@ const getTaskForm = function() {
 const loadTaskForm = function(container) {
   container.insertAdjacentElement('afterbegin', getTaskForm())
 
+  let page = document.querySelector('.tasks-list')
   let form = container.querySelector('form')
   let cancel = form.querySelector('#task-cancel-btn')
 
-  let page = document.querySelector('.tasks-list').dataset.id
   let projectInput = form.querySelector('[name="task-project"]')
   let priorityInput = form.querySelector('[name="task-priority"]')
   let projects = [...form.querySelectorAll('#task-project-list li')]
   let project = form.querySelector('#project-select-btn')
-  let template = projects.find(p => p.dataset.id == page)
+  let template = projects.find(p => p.dataset.id == page.dataset.id)
 
   if (!template) {
     template = projects.find(p => p.dataset.id == 'inbox')
   }
 
-  project.dataset.value = template.dataset.id
+  project.dataset.value = template.dataset.value
   project.dataset.color = template.dataset.color
   project.dataset.id = template.dataset.id
   project.innerHTML = template.innerHTML
@@ -461,7 +468,6 @@ const submitTaskForm = function(form) {
 }
 
 const loadTaskEdit = function({ page, task }) {
-  console.log({ page, task })
   let item = page.querySelector(`[data-id="${task.id}"]`)
   let current = item.querySelector('.task-wrapper')
 
@@ -531,14 +537,10 @@ const closeTaskForm = function(form) {
 }
 
 const closeTaskEdit = function({ form, content }) {
-  let page = document.querySelector('.tasks-list')
   let container = form.closest('.task-item')
-  let task = Task.storage().find(t => t.id == content.dataset.id)
 
   container.removeChild(form.parentNode)
   container.appendChild(content)
-
-  Event.publish('TASK-TOOLS-REQUEST', { item: content, page, task })
 }
 
 const Form = function() {

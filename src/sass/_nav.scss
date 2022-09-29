@@ -41,7 +41,7 @@ nav.pages button.active {
 }
 
 nav.pages button:hover {
-  background: #ECEEFD;
+  background: #F0F3FB;
 }
 
 span.page-icon {
@@ -51,6 +51,13 @@ span.page-icon {
   width: 30px;
   height: 30px;
   border-radius: 5px;
+  background: #ECEEFD;
+}
+
+button.page-btn.active span.page-icon,
+button.page-btn:hover span.page-icon,
+button.projects-btn.active span.page-icon,
+button.projects-btn:hover span.page-icon {
   background: #FFFFFF;
 }
 
@@ -142,7 +149,7 @@ button.add-project-btn span.btn-icon {
 }
 
 /*
-    PROJECT FORM BUTTONS
+    PROJECT FORM 
 */
 
 form.project-form label,
@@ -167,7 +174,25 @@ ul#project-colors-list {
   overflow-y: scroll;
 }
 
-div.project-form-tools button {
+div.project-warning {
+  margin: 10px 0 0 0;
+  font-size: 0.8em;
+}
+
+div.project-warning i {
+  padding: 0 10px 0 0;
+}
+
+div.confirmation-container {
+  font-size: 0.9em;
+}
+
+div.confirmation-container b {
+  font-weight: 500;
+}
+
+div.project-form-tools button,
+form.confirmation-form button {
   margin: 0 4px;
   padding: 5px 10px;
   font-size: 0.8em;
@@ -175,7 +200,8 @@ div.project-form-tools button {
   background: #EFEFEF;
 }
 
-button#project-submit-btn {
+button#project-submit-btn,
+button#confirm-delete-btn {
   background: #C3D4F5;
 }
 

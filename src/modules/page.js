@@ -2,7 +2,7 @@ import Event from './event'
 import Project from './project'
 import Task from './task'
 import * as bootstrap from 'bootstrap'
-import { format, isBefore, isToday, isAfter, parseISO } from 'date-fns'
+import { format, isBefore, isToday, isAfter, parseISO, startOfToday } from 'date-fns'
 
 export const getPage = function(name) {
   let page = document.querySelector(`button[data-id="${name}"]`)
@@ -73,10 +73,12 @@ const loadActiveBtn = function(page) {
 const loadStats = function({ container, tasks }) {
   tasks = tasks.filter(t => !t.status)
 
-  let overdue = tasks.find(t => isBefore(parseISO(t.date), new Date().setHours(0, 0, 0, 0)))
+  let overdue = tasks.find(t => isBefore(parseISO(t.date), startOfToday()))
   
   if (overdue) {
     container.classList.add('overdue')
+  } else {
+    container.classList.remove('overdue')
   }
 
   container.textContent = tasks.length == 0 ? '' : tasks.length
@@ -93,7 +95,9 @@ const loadProjects = function(projects) {
       <div class="project-btn-container">
         <button type="button" class="selection-display project-btn" id="nav-project-btn" data-id="${project.id}" data-title="Project: ${project.name}" data-color="${project.color}" data-ts-toggle="dropdown" aria-expanded="false">
           <span class="selection-color"></span>
-          <span class="selection-name">${project.name}</span>
+          <span class="selection-name" title="${project.name}">
+            ${project.name.substring(0, 15)}${project.name.length > 15 ? '...' : ''}
+            </span>
           <span class="selection-etc"></span>
         </button>
         <div class="dropdown-menu">
@@ -133,10 +137,6 @@ const loadProjects = function(projects) {
     document.addEventListener('click', () => {
       list.classList.remove('show')
     })
-    
-    if (window.matchMedia('(max-width: 600px)').matches) {
-      Event.publish('MOBILE-VIEW-REQUEST', document.body)
-    }
 
     let page = document.querySelector('.tasks-list')
     
@@ -157,6 +157,10 @@ const loadProjects = function(projects) {
   btn.addEventListener('click', () => {
     Event.publish('PROJECT-FORM-REQUEST', document.body)
   })
+
+  if (window.matchMedia('(max-width: 600px)').matches) {
+    Event.publish('MOBILE-VIEW-REQUEST', document.body)
+  }
 }
 
 const loadModal = function(container) {
@@ -190,14 +194,14 @@ const loadTasks = function({ page, tasks }) {
           <div class="task-info">
             <div class="task-status">
               <div class="task-status-icon">
-              <div class="task-status-input">
-              ${task.status ? `<input type="checkbox" checked>`
-                            : `<input type="checkbox">`}
-            </div>
-            <div class="task-status-display" data-value="${task.priority}">
-              ${task.status ? `<i class="bi bi-check-circle-fill"></i>`
-                            : `<i class="bi bi-circle"></i>`}
-            </div>
+                <div class="task-status-input">
+                  ${task.status ? `<input type="checkbox" checked>`
+                                : `<input type="checkbox">`}
+                </div>
+                <div class="task-status-display" data-value="${task.priority}">
+                  ${task.status ? `<i class="bi bi-check-circle-fill"></i>`
+                                : `<i class="bi bi-circle"></i>`}
+                </div>
               </div>
             </div>
             <div class="task-content">
@@ -217,12 +221,8 @@ const loadTasks = function({ page, tasks }) {
           </div>
           <div class="task-tools-container">
             <div class="task-tools">
-              <button type="button" id="task-edit-btn">
-                Edit Task
-              </button>
-              <button id="task-delete-btn">
-                Delete Task
-              </button>
+              <button type="button" id="task-edit-btn">Edit Task</button>
+              <button id="task-delete-btn">Delete Task</button>
             </div>
           </div>
         </div>
@@ -246,13 +246,11 @@ const loadTasks = function({ page, tasks }) {
       })
     })
 
-    item.querySelector('#task-edit-btn').addEventListener('click', (e) => {
-      e.preventDefault()
-      Event.publish('TASKS-REQUEST', page)
+    item.querySelector('#task-edit-btn').addEventListener('click', () => {
       Event.publish('TASK-EDIT-REQUEST', { page, task })
     })
   
-    item.querySelector('#task-delete-btn').addEventListener('click', (e) => {
+    item.querySelector('#task-delete-btn').addEventListener('click', () => {
       Event.publish('TASK-DELETE-REQUEST', task)
     })
 
@@ -260,11 +258,10 @@ const loadTasks = function({ page, tasks }) {
       list.classList.remove('show')
     })
 
-    let overdue = isBefore(parseISO(task.date), new Date().setHours(0, 0, 0, 0))
+    let overdue = isBefore(parseISO(task.date), startOfToday())
     
     if (overdue) {
       item.querySelector('.task-date').classList.add('overdue')
-      console.log('OVERDUE')
     }
 
     let project = Project.storage().find(p => p.name == task.project)
@@ -282,7 +279,9 @@ const loadTasks = function({ page, tasks }) {
       })
     } else {
       projectBtn.innerHTML = `
-        <span class="selection-name">${task.project}</span>
+        <span class="selection-name" title="${task.project}">
+          ${task.project.substring(0, 15)}${task.project.length > 15 ? '...' : ''}
+        </span>
         <span class="selection-color"></span>
       `
 
@@ -306,7 +305,7 @@ export const loadTaskBtn = function(page) {
 
   let btn = page.querySelector('#show-task-form-btn')
 
-  btn.addEventListener('click', (e) => {
+  btn.addEventListener('click', () => {
     Event.publish('TASK-FORM-REQUEST', page)
     page.removeChild(btn)
   })

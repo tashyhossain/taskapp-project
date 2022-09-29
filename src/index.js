@@ -1,13 +1,10 @@
 import './sass/app.scss'
-import 'bootstrap-icons/font/bootstrap-icons.css'
 import Event from './modules/event'
 import View from './modules/view'
-import Page, { getPage } from './modules/page'
-import Form from './modules/form'
-import App from './modules/app'
 import Project from './modules/project'
+import { getPage } from './modules/page'
 
-const initialize = (function() {
+(function() {
   View(document.querySelector('#app'))
   
   if (localStorage.length == 0) {

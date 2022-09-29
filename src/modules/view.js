@@ -1,4 +1,7 @@
 import Event from './event'
+import Page from './page'
+import Form from './form'
+import App from './app'
 import { format } from 'date-fns'
 
 const View = function(root) {
@@ -85,7 +88,6 @@ const MobileView = function(root) {
   let nav = root.querySelector('.nav')
   let pages = root.querySelectorAll('.page-btn')
   let projects = root.querySelectorAll('.project-btn-container')
-  console.log(projects)
 
   toggle.classList.remove('hide')
   toggle.setAttribute('data-bs-toggle', 'offcanvas')

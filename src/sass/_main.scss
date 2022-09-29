@@ -5,7 +5,9 @@ section.main {
   background: #F0F3FB;
 }
 
-/* TOOLBAR */
+/*
+    TOOLBAR SECTION 
+*/
 
 header.toolbar {
   display: flex;
@@ -26,7 +28,9 @@ span.current-day {
   font-weight: bold;
 }
 
-/* TASKS SECTION */
+/* 
+    TASKS SECTION 
+*/
 
 button.add-task-btn {
   padding: 5px 12px;
@@ -145,7 +149,9 @@ div.task-tools {
   width: 100%;
 }
 
-/* TASK FORM */
+/* 
+    TASK FORM 
+*/
 
 div.task-form-content {
   padding: 10px;
@@ -292,7 +298,9 @@ button#task-submit-btn {
   background: #C3D4F5;
 }
 
-/* MOBILE STYLES */
+/* 
+    MOBILE STYLES 
+*/
 
 div.nav-toggle {
   display: flex;

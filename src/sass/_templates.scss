@@ -40,6 +40,10 @@ span.selection-etc {
   font-size: 0.6em;
 }
 
+/*
+    PROJECT STYLES
+*/
+
 [data-value="inbox"] span.selection-icon {
   color: #90E0DE;
 }
@@ -123,6 +127,10 @@ span.selection-etc {
 [data-color="TEAL"] span.selection-color {
   background: #158FAD;
 }
+
+/*
+    PRIORITY STYLES
+*/
 
 div.task-status-display[data-value="0"] i,
 [data-value="0"] span.selection-icon {
