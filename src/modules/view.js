@@ -1,6 +1,5 @@
 import Event from './event'
 import { format } from 'date-fns'
-import * as bootstrap from 'bootstrap'
 
 const View = function(root) {
   root.innerHTML = `
@@ -35,13 +34,16 @@ const View = function(root) {
       </nav>
     </section>
     <section class="main container px-lg-5 px-md-5 py-2">
-      <header class="toolbar container px-5 py-4">
+      <div class="nav-toggle hide">
+        <i class="bi bi-list"></i>
+      </div>
+      <header class="toolbar container px-lg-5 py-lg-4 px-md-4 py-md-4 px-sm-5 py-sm-4">
         <div class="app-info">
           <div class="page-title"></div>
           <div class="current-date"></div>
         </div>
       </header>
-      <main class="tasks container px-5">
+      <main class="tasks container px-lg-5 px-md-4 px-sm-5">
         <div class="tasks-list container px-0 py-2"></div>
       </main>
     </section>
@@ -75,6 +77,32 @@ const View = function(root) {
     project.classList.add('open')
   })
 
+  Event.subscribe('MOBILE-VIEW-REQUEST', MobileView)
+}
+
+const MobileView = function(root) {
+  let toggle = root.querySelector('.nav-toggle')
+  let nav = root.querySelector('.nav')
+  let pages = root.querySelectorAll('.page-btn')
+  let projects = root.querySelectorAll('.project-btn-container')
+  console.log(projects)
+
+  toggle.classList.remove('hide')
+  toggle.setAttribute('data-bs-toggle', 'offcanvas')
+  toggle.setAttribute('data-bs-target', '#nav-sidebar')
+  toggle.setAttribute('aria-controls', 'nav-sidebar')
+
+  nav.classList.add('offcanvas-sm', 'offcanvas-start')
+  nav.id = 'nav-sidebar'
+  nav.tabIndex = '-1'
+  nav.setAttribute('aria-labelledby', 'navSidebarLabel')
+
+  let btns = [...pages, ...projects]
+
+  btns.forEach(btn => {
+    btn.setAttribute('data-bs-dismiss', 'offcanvas')
+    btn.setAttribute('data-bs-target', '#nav-sidebar')
+  })
 }
 
 export default View

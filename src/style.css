@@ -27,6 +27,28 @@ section.nav {
   background: #FFFFFF;
 }
 
+@media only screen and (max-width: 600px) {
+  section.nav {
+    width: 100%;
+  }
+
+  nav.pages {
+    width: 100%;
+  }
+
+  nav.pages button {
+    width: 90%;
+  }
+
+  div.projects-list {
+    width: 90%;
+  }
+
+  header.toolbar {
+    padding: 2em 1em;
+  }
+}
+
 header.app-title {
   display: flex;
   justify-content: center;
@@ -47,10 +69,16 @@ nav.pages {
 nav.pages button {
   display: flex;
   align-items: center;
-  width: 210px;
   padding: 5px;
   text-align: left;
   border-radius: 5px;
+}
+
+@media only screen and (min-width: 601px) {
+  nav.pages button,
+  div.projects-list {
+    width: 210px;
+  }
 }
 
 nav.pages button.active {
@@ -119,7 +147,6 @@ div.projects-title div.h6 {
 div.projects-list {
   display: flex;
   flex-flow: column wrap;
-  width: 210px;
 }
 
 div.project-btn-container {
@@ -171,6 +198,22 @@ div.project-form-tools button {
 
 button#project-submit-btn {
   background: #C3D4F5;
+}
+
+/* MAIN */
+
+div.nav-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  background: #FFFFFF;
+}
+
+div.nav-toggle.hide {
+  display: none;
 }
 
 /* TOOLBAR */
@@ -306,6 +349,32 @@ div.task-project span.selection-color {
 
 div.task-project span.selection-icon {
   margin: 0 0 0 5px;
+}
+
+div.task-tools-container {
+  display: none;
+}
+
+div.task-tools-container.show {
+  display: block;
+}
+
+div.task-tools {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+div.task-tools button {
+  margin: 8px 0 0 4px;
+  padding: 5px 10px;
+  font-size: 0.8em;
+  border-radius: 5px;
+  background: #EFEFEF;
+}
+
+button#task-edit-btn {
+  background: #C3D4F5;
 }
 
 /* TASK FORM */

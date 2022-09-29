@@ -21,4 +21,8 @@ const initialize = (function() {
   }
   
   Event.publish('PAGE-REQUEST', getPage('today'))
+
+  if (window.matchMedia('(max-width: 600px)').matches) {
+    Event.publish('MOBILE-VIEW-REQUEST', document.body)
+  } 
 })()

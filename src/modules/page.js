@@ -96,10 +96,10 @@ const loadProjects = function(projects) {
           <span class="selection-name">${project.name}</span>
           <span class="selection-etc"></span>
         </button>
-        <ul class="dropdown-menu">
-          <li><button class="dropdown-item" id="project-edit-btn">Edit</button></li>
-          <li><button class="dropdown-item" id="project-delete-btn">Delete</button></li>
-        </ul>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" id="project-edit-btn">Edit</button>
+          <button class="dropdown-item" id="project-delete-btn">Delete</button>
+        </div>
       </div>
     `)
 
@@ -133,6 +133,10 @@ const loadProjects = function(projects) {
     document.addEventListener('click', () => {
       list.classList.remove('show')
     })
+    
+    if (window.matchMedia('(max-width: 600px)').matches) {
+      Event.publish('MOBILE-VIEW-REQUEST', document.body)
+    }
 
   })
 
@@ -205,15 +209,21 @@ const loadTasks = function({ page, tasks }) {
             </div>
           </div>
         </div>
-        <ul class="dropdown-menu">
-          <li><button class="dropdown-item" id="task-edit-btn">Edit</button></li>
-          <li><button class="dropdown-item" id="task-delete-btn">Delete</button></li>
-        </ul>
+        <div class="task-tools-container">
+          <div class="task-tools">
+            <button type="button" id="task-edit-btn">
+              Edit Task
+            </button>
+            <button id="task-delete-btn">
+              Delete Task
+            </button>
+          </div>
+        </div>
       </div>
     `)
     
     let item = page.querySelector(`[data-id="${task.id}"]`)
-    let list = item.querySelector('.dropdown-menu')
+    let list = item.querySelector('.task-tools-container')
 
     item.addEventListener('contextmenu', (e) => {
       e.preventDefault()
