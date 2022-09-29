@@ -1,5 +1,4 @@
-import './style.scss'
-import './style.css'
+import './sass/app.scss'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import Event from './modules/event'
 import View from './modules/view'

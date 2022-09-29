@@ -53,9 +53,9 @@ const loadPage = function(page) {
 
 const loadActiveBtn = function(page) {
   let btns = document.querySelectorAll('nav.pages button') 
-  let projects = Project.storage().filter(p => p.name !== 'inbox')
-  let project = document.querySelector('.projects-btn')
-  let icon = project.querySelector('.page-etc')
+  let storage = Project.storage().filter(p => p.name !== 'inbox')
+  let projects = document.querySelector('.projects-btn')
+  let icon = projects.querySelector('.page-etc')
 
   btns.forEach(btn => {
     btn.classList.remove('active')
@@ -63,8 +63,8 @@ const loadActiveBtn = function(page) {
 
     if (page.id == btn.dataset.id) {
       btn.classList.add('active')
-    } else if (projects.find(p => p.id == page.id)) {
-      project.classList.add('active')
+    } else if (storage.find(p => p.id == page.id)) {
+      projects.classList.add('active')
       icon.classList.add('active')
     } 
   })
@@ -138,6 +138,11 @@ const loadProjects = function(projects) {
       Event.publish('MOBILE-VIEW-REQUEST', document.body)
     }
 
+    let page = document.querySelector('.tasks-list')
+    
+    if (page.dataset.id == btn.dataset.id) {
+      btn.classList.add('active')
+    }
   })
 
   nav.insertAdjacentHTML('beforeend', `
@@ -182,41 +187,43 @@ const loadTasks = function({ page, tasks }) {
     page.insertAdjacentHTML('beforeend', `
       <div class="task-item" data-id="${task.id}">
         <div class="task-wrapper">
-          <div class="task-status">
-            <div class="task-status-icon">
-            <div class="task-status-input">
-            ${task.status ? `<input type="checkbox" checked>`
-                          : `<input type="checkbox">`}
-          </div>
-          <div class="task-status-display" data-value="${task.priority}">
-            ${task.status ? `<i class="bi bi-check-circle-fill"></i>`
-                          : `<i class="bi bi-circle"></i>`}
-          </div>
+          <div class="task-info">
+            <div class="task-status">
+              <div class="task-status-icon">
+              <div class="task-status-input">
+              ${task.status ? `<input type="checkbox" checked>`
+                            : `<input type="checkbox">`}
             </div>
-          </div>
-          <div class="task-content">
-            <div class="task-details">
-              <div class="task-name">${task.name}</div>
-              ${task.desc ? `<div class="task-desc">${task.desc}</div>`
-                          : ''}
+            <div class="task-status-display" data-value="${task.priority}">
+              ${task.status ? `<i class="bi bi-check-circle-fill"></i>`
+                            : `<i class="bi bi-circle"></i>`}
             </div>
-            <div class="task-etc">
-              <div class="task-date">
-                <span class="task-date-icon"><i class="bi bi-calendar-event"></i></span>
-                <span class="task-date-info">${format(parseISO(task.date), 'MMM dd')}</span>
               </div>
-              <div class="task-project selection-display"></div>
+            </div>
+            <div class="task-content">
+              <div class="task-details">
+                <div class="task-name">${task.name}</div>
+                ${task.desc ? `<div class="task-desc">${task.desc}</div>`
+                            : ''}
+              </div>
+              <div class="task-etc">
+                <div class="task-date">
+                  <span class="task-date-icon"><i class="bi bi-calendar-event"></i></span>
+                  <span class="task-date-info">${format(parseISO(task.date), 'MMM dd')}</span>
+                </div>
+                <div class="task-project selection-display"></div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="task-tools-container">
-          <div class="task-tools">
-            <button type="button" id="task-edit-btn">
-              Edit Task
-            </button>
-            <button id="task-delete-btn">
-              Delete Task
-            </button>
+          <div class="task-tools-container">
+            <div class="task-tools">
+              <button type="button" id="task-edit-btn">
+                Edit Task
+              </button>
+              <button id="task-delete-btn">
+                Delete Task
+              </button>
+            </div>
           </div>
         </div>
       </div>

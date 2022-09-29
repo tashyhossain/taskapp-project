@@ -1,7 +1,6 @@
 const Event = function(cache = {}) {
   return {
     publish: function(event, data) {
-      console.log(`PUBLISH: ${event} with ${data}`)
       if (cache[event]) {
         cache[event].forEach(e => {
           e(data)

@@ -1,24 +1,7 @@
-@import "~bootstrap/scss/bootstrap";
-// @import "./style.css";
-
-.dropdown {
+div.selection-display {
+  display: flex;
+  align-items: center;
   cursor: default;
-}
-
-form.project-form label,
-form.project-form input,
-button#color-select-btn {
-  width: 100%;
-}
-
-input[name="project-name"]:focus {
-  outline: none;
-}
-
-button#color-select-btn {
-  border-radius: 3px;
-  border: 1px solid #767676;
-  background: #FFFFFF;
 }
 
 button.selection-display,
@@ -27,12 +10,6 @@ li.selection-item {
   align-items: center;
   padding: 5px;
   cursor: pointer;
-}
-
-div.selection-display {
-  display: flex;
-  align-items: center;
-  cursor: default;
 }
 
 li.selection-item:hover {
@@ -53,10 +30,6 @@ span.selection-color {
   border-radius: 3px;
 }
 
-button.project-btn span.selection-color {
-  margin-right: 20px;
-}
-
 span.selection-icon { 
   margin: 0 7px;
 }
@@ -65,12 +38,6 @@ span.selection-etc {
   padding: 0 10px;
   color: #ACACAC;
   font-size: 0.6em;
-}
-
-ul#project-colors-list {
-  width: 100%;
-  max-height: 200px;
-  overflow-y: scroll;
 }
 
 [data-value="inbox"] span.selection-icon {

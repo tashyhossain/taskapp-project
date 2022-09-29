@@ -1,0 +1,213 @@
+section.nav {
+  display: flex;
+  flex-flow: column wrap;
+  width: 250px;
+  background: #FFFFFF;
+}
+
+header.app-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100px;
+}
+
+/*
+    PAGES SECTION
+*/
+
+nav.pages {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center;
+  align-self: flex-start;
+  width: 100%;
+}
+
+nav.pages button {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  text-align: left;
+  border-radius: 5px;
+}
+
+nav.pages button.active {
+  outline: none;
+  border: 0;
+  background: #ECEEFD;
+}
+
+nav.pages button:hover {
+  background: #ECEEFD;
+}
+
+span.page-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  background: #FFFFFF;
+}
+
+span.page-name {
+  flex: 1;
+  margin: 0 10px;
+  font-size: 0.9em;
+}
+
+button[data-id="upcoming"] span.page-icon {
+  font-size: 0.9em;
+}
+
+button.projects-btn span.page-etc {
+  margin: 0 5px;
+}
+
+span.page-etc.open {
+  transform: rotate(180deg);
+}
+
+span.page-etc.active {
+  transform: rotate(-90deg);
+}
+
+/*
+    PROJECTS SECTION
+*/
+
+nav.projects {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  align-self: flex-start;
+  flex: 1;
+  width: 100%;
+}
+
+div.projects-list {
+  display: flex;
+  flex-flow: column wrap;
+}
+
+div.project-btn-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+button.project-btn {
+  display: flex;
+  width: 100%;
+  font-size: 0.9em;
+  border-radius: 5px;
+}
+
+button.project-btn span.selection-color {
+  margin-right: 20px;
+}
+
+button.project-btn:hover {
+  background: #EFEFEF;
+}
+
+button.project-btn.active {
+  font-weight: 500;
+}
+
+button.add-project-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+button.add-project-btn {
+  opacity: 0.5;
+  margin: 5px 0;
+  font-size: 0.9em;
+}
+
+button.add-project-btn:hover {
+  opacity: 1;
+}
+
+button.add-project-btn span.btn-icon {
+  margin: 0 17px 0 12px;
+}
+
+/*
+    PROJECT FORM BUTTONS
+*/
+
+form.project-form label,
+form.project-form input,
+button#color-select-btn {
+  width: 100%;
+}
+
+input[name="project-name"]:focus {
+  outline: none;
+}
+
+button#color-select-btn {
+  border-radius: 3px;
+  border: 1px solid #767676;
+  background: #FFFFFF;
+}
+
+ul#project-colors-list {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: scroll;
+}
+
+div.project-form-tools button {
+  margin: 0 4px;
+  padding: 5px 10px;
+  font-size: 0.8em;
+  border-radius: 5px;
+  background: #EFEFEF;
+}
+
+button#project-submit-btn {
+  background: #C3D4F5;
+}
+
+@media only screen and (min-width: 601px) {
+
+  nav.pages button {
+    width: 210px;
+  }
+
+  div.projects-list {
+    width: 210px;
+  }
+
+}
+
+@media only screen and (max-width: 600px) {
+
+  section.nav {
+    width: 100%;
+  }
+
+  nav.pages {
+    width: 100%;
+  }
+
+  nav.pages button {
+    width: 90%;
+  }
+
+  div.projects-list {
+    width: 90%;
+  }
+
+}
+
