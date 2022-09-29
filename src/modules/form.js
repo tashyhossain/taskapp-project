@@ -1,6 +1,6 @@
 import Event from './event'
 import Project from './project'
-import * as bootstrap from 'bootstrap'
+import { Modal } from 'bootstrap'
 import { getPage } from './page'
 import { v4 as uuidv4 } from 'uuid'
 import { format, isToday, isTomorrow, parseISO, startOfTomorrow } from 'date-fns'
@@ -204,7 +204,7 @@ const submitProjectForm = function(form) {
   if (Project.has(name.value)) {
     getProjectAlert(modal)
   } else {
-    bootstrap.Modal.getInstance(modal).hide()
+    Modal.getInstance(modal).hide()
     Event.publish('PROJECT-SUBMIT', { 
       name: name.value, 
       color: color.value, 
@@ -216,7 +216,7 @@ const submitProjectForm = function(form) {
 const submitProjectEdit = function(form) {
   let modal = form.closest('.modal')
 
-  bootstrap.Modal.getInstance(modal).hide()
+  Modal.getInstance(modal).hide()
 
   Event.publish('PROJECT-EDIT-SUBMIT', {
     id: form.dataset.id,

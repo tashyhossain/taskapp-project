@@ -1,7 +1,7 @@
 import Event from './event'
 import Project from './project'
 import Task from './task'
-import * as bootstrap from 'bootstrap'
+import { Modal } from 'bootstrap'
 import { format, isBefore, isToday, isAfter, parseISO, startOfToday } from 'date-fns'
 
 export const getPage = function(name) {
@@ -165,7 +165,7 @@ const loadProjects = function(projects) {
 
 const loadModal = function(container) {
   let content = container.querySelector('.modal')
-  let modal = new bootstrap.Modal(content)
+  let modal = new Modal(content)
 
   modal.show()
 
