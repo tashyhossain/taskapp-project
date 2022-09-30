@@ -428,9 +428,13 @@ const loadTaskForm = function(container) {
   let project = form.querySelector('#project-select-btn')
   let template = projects.find(p => p.dataset.id == page.dataset.id)
 
-  // if (!template) {
-  //   template = projects.find(p => p.dataset.name == 'inbox')
-  // }
+  console.log(template)
+
+  if (!template) {
+    template = projects.find(p => p.dataset.name == 'inbox')
+  }
+
+  console.log(template)
 
   // project.dataset.value = template.dataset.value
   // project.dataset.color = template.dataset.color
@@ -438,8 +442,8 @@ const loadTaskForm = function(container) {
 
   // project.innerHTML = template.innerHTML
 
-  // projectInput.value = template.dataset.value
-  // priorityInput.value = 0
+  projectInput.value = template.dataset.value
+  priorityInput.value = 0
 
   form.addEventListener('submit', event => {
     event.preventDefault()
