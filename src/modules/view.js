@@ -1,7 +1,4 @@
 import Event from './event'
-import Page from './page'
-import Form from './form'
-import App from './app'
 import { format } from 'date-fns'
 
 const View = function(root) {

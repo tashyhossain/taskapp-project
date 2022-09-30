@@ -2,7 +2,9 @@ import './sass/app.scss'
 import Event from './modules/event'
 import View from './modules/view'
 import Project from './modules/project'
-import { getPage } from './modules/page'
+import Page, { getPage } from './modules/page'
+import Form from './modules/form'
+import App from './modules/app'
 
 (function() {
   View(document.querySelector('#app'))
