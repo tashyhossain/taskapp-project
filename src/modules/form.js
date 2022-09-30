@@ -381,36 +381,36 @@ const getTaskForm = function() {
   })
 
   let projects = form.querySelectorAll('#task-project-list li')
+  let projectSelect = form.querySelector('#project-select-btn')
+  let projectInput = form.querySelector('[name="task-project"]')
 
   projects.forEach(project => {
-    let select = form.querySelector('#project-select-btn')
-    let input = form.querySelector('[name="task-project"]')
 
     project.addEventListener('click', () => {
-      input.value = project.dataset.value
-      select.dataset.value = project.dataset.value
-      select.dataset.color = project.dataset.color
+      projectInput.value = project.dataset.value
+      projectSelect.dataset.value = project.dataset.value
+      projectSelect.dataset.color = project.dataset.color
 
-      select.innerHTML = project.innerHTML
+      projectSelect.innerHTML = project.innerHTML
     })
   })
 
   let priorities = form.querySelectorAll('#task-priority-list li')
-  let priority = form.querySelector('#priority-select-btn')
+  let prioritySelect = form.querySelector('#priority-select-btn')
+  let priorityInput = form.querySelector('[name="task-priority"]')
 
-  priorities.forEach(item => {
-    let input = form.querySelector('[name="task-priority"]')
+  priorities.forEach(priority => {
 
-    item.addEventListener('click', () => {
-      input.value = item.dataset.value
-      priority.dataset.value = item.dataset.value
+    priority.addEventListener('click', () => {
+      priorityInput.value = priority.dataset.value
+      prioritySelect.dataset.value = priority.dataset.value
       
-      priority.innerHTML = item.innerHTML
-      priority.removeChild(priority.querySelector('.selection-name'))
+      prioritySelect.innerHTML = priority.innerHTML
+      prioritySelect.removeChild(prioritySelect.querySelector('.selection-name'))
     })
   })
 
-  if (!priority.dataset.value) priority.dataset.value = 0
+  if (!prioritySelect.dataset.value) prioritySelect.dataset.value = 0
 
   return form
 }
