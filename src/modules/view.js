@@ -34,10 +34,10 @@ const View = function(root) {
       </nav>
     </section>
     <section class="main container px-lg-5 px-md-5 py-2">
-      <div class="nav-toggle hide">
-        <i class="bi bi-list"></i>
-      </div>
       <header class="toolbar container px-lg-5 py-lg-4 px-md-4 py-md-4 px-sm-5 py-sm-4">
+        <div class="nav-toggle hide">
+          <i class="bi bi-list"></i>
+        </div>
         <div class="app-info">
           <div class="page-title"></div>
           <div class="current-date"></div>
