@@ -261,6 +261,12 @@ li.selection-item[data-value="inbox"] span.selection-name {
   text-transform: capitalize;
 }
 
+ul#task-project-list {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: scroll;
+}
+
 button.task-priority-btn {
   height: 30px;
   padding: 0;
