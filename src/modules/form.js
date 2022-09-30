@@ -428,14 +428,15 @@ const loadTaskForm = function(container) {
   let project = form.querySelector('#project-select-btn')
   let template = projects.find(p => p.dataset.id == page.dataset.id) || null
 
-  if (!template) {
-    template = projects.find(p => p.dataset.id == 'inbox')
-  }
+  // if (!template) {
+  //   template = projects.find(p => p.dataset.name == 'inbox')
+  // }
 
-  project.innerHTML = template.innerHTML
-  project.dataset.value = template.dataset.value
-  project.dataset.color = template.dataset.color
-  project.dataset.id = template.dataset.id
+  // project.dataset.value = template.dataset.value
+  // project.dataset.color = template.dataset.color
+  // project.dataset.id = template.dataset.id
+
+  // project.innerHTML = template.innerHTML
 
   projectInput.value = template.dataset.value
   priorityInput.value = 0
