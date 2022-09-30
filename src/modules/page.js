@@ -213,7 +213,7 @@ const loadTasks = function({ page, tasks }) {
               <div class="task-etc">
                 <div class="task-date">
                   <span class="task-date-icon"><i class="bi bi-calendar-event"></i></span>
-                  <span class="task-date-info">${format(parseISO(task.date), 'MMM dd')}</span>
+                  <span class="task-date-info" title="${format(parseISO(task.date), 'MMM dd')}"></span>
                 </div>
                 <div class="task-project selection-display"></div>
               </div>
@@ -231,6 +231,11 @@ const loadTasks = function({ page, tasks }) {
     
     let item = page.querySelector(`[data-id="${task.id}"]`)
     let list = item.querySelector('.task-tools-container')
+
+    Event.publish('TASK-DATE-REQUEST', { 
+      container: item.querySelector('.task-date-info'),
+      date: task.date
+    })
 
     item.addEventListener('contextmenu', (e) => {
       e.preventDefault()

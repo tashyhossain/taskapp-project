@@ -479,6 +479,10 @@ const loadTaskEdit = function({ page, task }) {
   item.querySelector('[name="task-priority"]').value = task.priority
   item.querySelector('[name="task-project"]').value = task.project
 
+  let date = item.querySelector('.task-form-date-display')
+  
+  Event.publish('TASK-DATE-REQUEST', { container: date, date: task.date })  
+
   let priority = item.querySelector('#priority-select-btn')
   let priorityTemplate = item.querySelector(`li[data-value="${task.priority}"]`)
 
