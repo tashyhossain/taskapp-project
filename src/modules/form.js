@@ -390,6 +390,7 @@ const getTaskForm = function() {
       projectInput.value = project.dataset.value
       projectSelect.dataset.value = project.dataset.value
       projectSelect.dataset.color = project.dataset.color
+      projectSelect.dataset.id = project.dataset.id
 
       projectSelect.innerHTML = project.innerHTML
     })
@@ -426,21 +427,17 @@ const loadTaskForm = function(container) {
   let priorityInput = form.querySelector('[name="task-priority"]')
   let projects = [...form.querySelectorAll('#task-project-list li')]
   let project = form.querySelector('#project-select-btn')
-  let template = projects.find(p => p.dataset.id == page.dataset.id)
-
-  console.log(template)
+  let template = projects.find(p => p.dataset.id === page.dataset.id)
 
   if (!template) {
-    template = projects.find(p => p.dataset.name == 'inbox')
+    template = projects.find(p => p.dataset.id == 'inbox')
   }
 
-  console.log(template)
+  project.dataset.value = template.dataset.value
+  project.dataset.color = template.dataset.color
+  project.dataset.id = template.dataset.id
 
-  // project.dataset.value = template.dataset.value
-  // project.dataset.color = template.dataset.color
-  // project.dataset.id = template.dataset.id
-
-  // project.innerHTML = template.innerHTML
+  project.innerHTML = template.innerHTML
 
   projectInput.value = template.dataset.value
   priorityInput.value = 0
