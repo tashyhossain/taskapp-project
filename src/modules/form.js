@@ -426,7 +426,7 @@ const loadTaskForm = function(container) {
   let priorityInput = form.querySelector('[name="task-priority"]')
   let projects = [...form.querySelectorAll('#task-project-list li')]
   let project = form.querySelector('#project-select-btn')
-  let template = projects.find(p => p.dataset.id == page.dataset.id) || null
+  let template = projects.find(p => p.dataset.id == page.dataset.id)
 
   // if (!template) {
   //   template = projects.find(p => p.dataset.name == 'inbox')
@@ -438,8 +438,8 @@ const loadTaskForm = function(container) {
 
   // project.innerHTML = template.innerHTML
 
-  projectInput.value = template.dataset.value
-  priorityInput.value = 0
+  // projectInput.value = template.dataset.value
+  // priorityInput.value = 0
 
   form.addEventListener('submit', event => {
     event.preventDefault()
