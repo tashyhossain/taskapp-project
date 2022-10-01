@@ -9,7 +9,7 @@ import App from './modules/app'
 (function() {
   View(document.querySelector('#app'))
   
-  if (localStorage.length == 0) {
+  if (!localStorage['task-app-projects']) {
     Project.set([{
       name: 'inbox',
       color: null,

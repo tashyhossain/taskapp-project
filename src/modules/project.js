@@ -2,11 +2,11 @@ import { v4 as uuidv4 } from 'uuid'
 
 export default class Project {
   static storage() {
-    return JSON.parse(localStorage.getItem('projects') || '[]')
+    return JSON.parse(localStorage.getItem('task-app-projects') || '[]')
   }
 
   static set(projects) {
-    localStorage.setItem('projects', JSON.stringify(projects))
+    localStorage.setItem('task-app-projects', JSON.stringify(projects))
   }
 
   static has(project) {

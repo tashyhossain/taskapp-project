@@ -285,6 +285,22 @@ const loadTaskDate = function({ container, date }) {
   container.textContent = label
 }
 
+const getTemplate = function(current, template) {
+  if (template.dataset.value) {
+    current.dataset.value = template.dataset.value
+  }
+
+  if (template.dataset.color) {
+    current.dataset.color = template.dataset.color
+  }
+
+  if (template.dataset.id) {
+    current.dataset.id = template.dataset.id
+  }
+
+  current.innerHTML = template.innerHTML
+}
+
 const getTaskForm = function() {
   let form = document.createElement('div')
 
@@ -381,37 +397,31 @@ const getTaskForm = function() {
   })
 
   let projects = form.querySelectorAll('#task-project-list li')
-  let projectSelect = form.querySelector('#project-select-btn')
+  let project = form.querySelector('#project-select-btn')
   let projectInput = form.querySelector('[name="task-project"]')
 
-  projects.forEach(project => {
-
-    project.addEventListener('click', () => {
-      projectInput.value = project.dataset.value
-      projectSelect.dataset.value = project.dataset.value
-      projectSelect.dataset.color = project.dataset.color
-      projectSelect.dataset.id = project.dataset.id
-
-      projectSelect.innerHTML = project.innerHTML
+  projects.forEach(template => {
+    template.addEventListener('click', () => {
+      getTemplate(project, template)
+      
+      projectInput.value = template.dataset.value
     })
   })
 
   let priorities = form.querySelectorAll('#task-priority-list li')
-  let prioritySelect = form.querySelector('#priority-select-btn')
+  let priority = form.querySelector('#priority-select-btn')
   let priorityInput = form.querySelector('[name="task-priority"]')
 
-  priorities.forEach(priority => {
+  priorities.forEach(template => {
+    template.addEventListener('click', () => {
+      getTemplate(priority, template)
+      priority.removeChild(priority.querySelector('.selection-name'))
 
-    priority.addEventListener('click', () => {
-      priorityInput.value = priority.dataset.value
-      prioritySelect.dataset.value = priority.dataset.value
-      
-      prioritySelect.innerHTML = priority.innerHTML
-      prioritySelect.removeChild(prioritySelect.querySelector('.selection-name'))
+      priorityInput.value = template.dataset.value
     })
   })
 
-  if (!prioritySelect.dataset.value) prioritySelect.dataset.value = 0
+  if (!priority.dataset.value) priority.dataset.value = 0
 
   return form
 }
@@ -433,11 +443,7 @@ const loadTaskForm = function(container) {
     template = projects.find(p => p.dataset.id == 'inbox')
   }
 
-  project.dataset.value = template.dataset.value
-  project.dataset.color = template.dataset.color
-  project.dataset.id = template.dataset.id
-
-  project.innerHTML = template.innerHTML
+  getTemplate(project, template)
 
   projectInput.value = template.dataset.value
   priorityInput.value = 0
@@ -495,9 +501,7 @@ const loadTaskEdit = function({ page, task }) {
   let project = item.querySelector('#project-select-btn')
   let projectTemplate = item.querySelector(`li[data-value="${task.project}"]`)
 
-  project.dataset.value = task.project
-  project.dataset.color = projectTemplate.dataset.color
-  project.innerHTML = projectTemplate.innerHTML
+  getTemplate(project, projectTemplate)
 
   let submit = item.querySelector('#task-submit-btn')
   let cancel = item.querySelector('#task-cancel-btn')
